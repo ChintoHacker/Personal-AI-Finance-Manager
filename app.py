@@ -1,4 +1,4 @@
-# app.py - Streamlit GUI for Personal AI Finance Manager (Professional Version)
+# app.py - Streamlit GUI for Personal AI Finance Manager (Professional & Improved Version)
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -19,7 +19,7 @@ import altair as alt  # For interactive charts
 
 st.set_page_config(page_title="Personal AI Finance Manager", page_icon="💰", layout="wide")
 
-# Professional Custom Theme (Sleek, Modern, User-Friendly)
+# Professional Custom Theme (Enhanced for Impressive Look)
 st.markdown("""
 <style>
     .main { 
@@ -38,11 +38,13 @@ st.markdown("""
         border-radius: 8px; 
         padding: 12px 24px;
         font-weight: 500;
-        transition: background-color 0.3s ease;
+        transition: all 0.3s ease;
         border: none;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Glow effect */
     }
     .stButton>button:hover {
         background-color: #0056b3;
+        box-shadow: 0 0 20px rgba(0, 123, 255, 0.7); /* Enhanced glow on hover */
     }
     .stProgress > div > div > div > div {
         background-color: #28a745;
@@ -57,6 +59,10 @@ st.markdown("""
         border-radius: 8px;
         padding: 15px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: transform 0.2s;
+    }
+    .stMetric:hover {
+        transform: translateY(-5px); /* Interactive lift on hover */
     }
     .block-container {
         padding: 25px;
@@ -66,16 +72,36 @@ st.markdown("""
         margin-bottom: 25px;
     }
     .stExpander {
-        border: 1px solid #dee2e6;
+        border: none;
         border-radius: 8px;
         margin-bottom: 15px;
+        background-color: #f8f9fc;
+        padding: 15px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
     .stTab {
-        background-color: #f1f3f5;
+        background-color: #ffffff;
         border-radius: 8px 8px 0 0;
+        font-weight: bold;
+    }
+    /* Card-like sections for Insights */
+    .insight-card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+    .insight-card:hover {
+        transform: translateY(-3px);
     }
 </style>
 """, unsafe_allow_html=True)
+
+# Add Project Title at the Top
+st.title("Personal AI Finance Manager")
+st.markdown("Your smart companion for financial planning and predictions.")
 
 # Load and train model (run once)
 @st.cache_resource
@@ -113,20 +139,20 @@ def load_and_train_model():
 model, scaler = load_and_train_model()
 
 def predict_finance(income, expenses, savings):
-    credit_score = 650  # Default; can be made dynamic
+    credit_score = 650
     extra = max(0, expenses - savings)
     X_new = np.array([[income, expenses, extra, credit_score]])
     X_scaled = scaler.transform(X_new)
     p = model.predict(X_scaled)[0]
     if p[0] > savings * 1.1:
         health = "Excellent"
-        health_color = "#28a745"  # Green
+        health_color = "#28a745"
     elif p[0] < savings * 0.9:
         health = "Poor"
-        health_color = "#dc3545"  # Red
+        health_color = "#dc3545"
     else:
         health = "Average"
-        health_color = "#ffc107"  # Orange
+        health_color = "#ffc107"
     return {
         "next_month": round(p[0], 2),
         "next_3_months": round(p[1], 2),
@@ -135,20 +161,20 @@ def predict_finance(income, expenses, savings):
         "health_color": health_color
     }
 
-# Sidebar for Inputs (Professional, Clean, with Tooltips)
+# Sidebar for Inputs (Clean & Professional)
 with st.sidebar:
-    st.header("📊 Your Financial Details")
+    st.header("Your Financial Details")
     st.markdown("---")
-    monthly_income = st.number_input("💼 Monthly Income (PKR)", min_value=0.0, value=50000.0, step=1000.0, help="Enter your total monthly earnings, including salary and any bonuses.")
-    monthly_expenses = st.number_input("🛒 Monthly Expenses (PKR)", min_value=0.0, value=30000.0, step=1000.0, help="Sum of all monthly expenditures like rent, utilities, and groceries.")
-    current_savings = st.number_input("💰 Current Savings (PKR)", min_value=0.0, value=10000.0, step=1000.0, help="Your current savings balance across all accounts.")
-    debt = st.number_input("📉 Total Debt (PKR)", min_value=0.0, value=0.0, step=1000.0, help="Total outstanding debts, including loans and credit cards.")
-    investments = st.number_input("📈 Current Investments (PKR)", min_value=0.0, value=0.0, step=1000.0, help="Current value of your investment portfolio (stocks, funds, etc.).")
-    age = st.number_input("👤 Your Age", min_value=18, max_value=100, value=30, step=1, help="Used to provide personalized investment recommendations.")
-    goal_purpose = st.text_input("🎯 Saving Goal Purpose", value="Car", help="e.g., 'Buy a House', 'Vacation', or 'Emergency Fund'.")
-    goal_amount = st.number_input("🏆 Goal Amount (PKR)", min_value=0.0, value=100000.0, step=1000.0, help="The target amount you aim to save for this goal.")
+    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0.0, value=50000.0, step=1000.0, help="Total monthly earnings.")
+    monthly_expenses = st.number_input("Monthly Expenses (PKR)", min_value=0.0, value=30000.0, step=1000.0, help="Total monthly spendings.")
+    current_savings = st.number_input("Current Savings (PKR)", min_value=0.0, value=10000.0, step=1000.0, help="Current saved amount.")
+    debt = st.number_input("Total Debt (PKR)", min_value=0.0, value=0.0, step=1000.0, help="Loans or debts.")
+    investments = st.number_input("Current Investments (PKR)", min_value=0.0, value=0.0, step=1000.0, help="Investment value.")
+    age = st.number_input("Your Age", min_value=18, max_value=100, value=30, step=1, help="For suggestions.")
+    goal_purpose = st.text_input("Saving Goal Purpose", value="Car", help="e.g., Car, House.")
+    goal_amount = st.number_input("Goal Amount (PKR)", min_value=0.0, value=100000.0, step=1000.0, help="Target amount.")
     st.markdown("---")
-    analyze_button = st.button("🔍 Analyze Finances", use_container_width=True)
+    analyze_button = st.button("Analyze Finances", use_container_width=True)
 
 if analyze_button:
     results = predict_finance(monthly_income, monthly_expenses, current_savings)
@@ -157,34 +183,31 @@ if analyze_button:
     emergency_needed = monthly_expenses * 6
     emergency_status = "✅ Funded" if current_savings >= emergency_needed else "⚠️ Build Now"
     emergency_progress = min(current_savings / emergency_needed, 1.0) if emergency_needed > 0 else 0
-    # 50/30/20 Rule
     needs = monthly_income * 0.5
     wants = monthly_income * 0.3
     save = monthly_income * 0.2
     savings_progress = min((current_savings / save) if save > 0 else 0, 1.0)
-    # Investment Suggestion
     if age < 30:
-        investment_sug = "Aggressive Portfolio: 80% Stocks, 20% Gold – High growth potential."
+        investment_sug = "Aggressive Portfolio: 80% Stocks, 20% Gold – High growth."
     elif age < 45:
-        investment_sug = "Balanced Portfolio: 60% Stocks, 30% Debt, 10% Gold – Steady returns."
+        investment_sug = "Balanced Portfolio: 60% Stocks, 30% Debt, 10% Gold – Steady."
     else:
         investment_sug = "Conservative Portfolio: 40% Stocks, 50% Debt, 10% Gold – Low risk."
-    # Saving Goal with Compound Interest
-    assumed_interest = 0.05 / 12  # 5% annual
+    assumed_interest = 0.05 / 12
     if current_savings > 0 and monthly_income > 0:
         basic_monthly = monthly_income * 0.20
         strong_monthly = monthly_income * 0.30
         basic_months = np.log((goal_amount * assumed_interest / basic_monthly) + 1) / np.log(1 + assumed_interest) if basic_monthly > 0 else float('inf')
         strong_months = np.log((goal_amount * assumed_interest / strong_monthly) + 1) / np.log(1 + assumed_interest) if strong_monthly > 0 else float('inf')
         current_rate_months = np.log((goal_amount * assumed_interest / current_savings) + 1) / np.log(1 + assumed_interest)
-        current_sug = f"{current_rate_months:.0f} months (assuming 5% annual interest)"
+        current_sug = f"{current_rate_months:.0f} months (5% interest)"
     else:
-        current_sug = "Begin saving to estimate time!"
+        current_sug = "Start saving!"
         basic_months = float('inf')
         strong_months = float('inf')
 
-    # Interactive Tabs with Icons
-    tab1, tab2, tab3 = st.tabs(["📈 Predictions", "💡 Insights", "📊 Visualizations"])
+    # Tabs with Clear Labels
+    tab1, tab2, tab3 = st.tabs(["Predictions", "Insights", "Visualizations"])
 
     with tab1:
         st.subheader("Financial Predictions")
@@ -195,66 +218,80 @@ if analyze_button:
             st.metric("Financial Health", results['health'], delta_color="normal")
         with col3:
             st.metric("Next Month Savings", f"{results['next_month']:.2f} PKR")
-        col4, col5 = st.columns(2)
-        with col4:
-            st.metric("Avg. Next 3 Months", f"{results['next_3_months']:.2f} PKR")
-        with col5:
-            st.metric("Avg. Next 6 Months", f"{results['next_6_months']:.2f} PKR")
+        # Skipped 3 and 6 months avg as per request
 
     with tab2:
         st.subheader("Key Insights")
-        with st.expander("Net Worth Overview", expanded=True):
-            st.markdown(f"**Current Net Worth:** {net_worth:.2f} PKR")
+        # Improved Design: Card-like sections instead of expanders
+        col_a, col_b = st.columns(2)
+        with col_a:
+            st.markdown('<div class="insight-card">', unsafe_allow_html=True)
+            st.markdown("**Net Worth Overview**")
+            st.markdown(f"Current Net Worth: {net_worth:.2f} PKR")
             if net_worth < 0:
-                st.warning("Your net worth is negative. Focus on reducing debt.")
+                st.warning("Negative net worth. Reduce debt.")
             else:
-                st.success("Positive net worth – keep building!")
-        with st.expander("Emergency Fund", expanded=True):
-            st.write(f"Recommended (6 months expenses): {emergency_needed:.2f} PKR")
+                st.success("Positive net worth!")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            st.markdown('<div class="insight-card">', unsafe_allow_html=True)
+            st.markdown("**Emergency Fund**")
+            st.write(f"Needed: {emergency_needed:.2f} PKR")
             st.write(f"Status: {emergency_status}")
             st.progress(emergency_progress)
-        with st.expander("50/30/20 Budget Rule", expanded=True):
-            st.write(f"Needs (50%): {needs:.2f} PKR")
-            st.write(f"Wants (30%): {wants:.2f} PKR")
-            st.write(f"Savings (20%): {save:.2f} PKR")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        with col_b:
+            st.markdown('<div class="insight-card">', unsafe_allow_html=True)
+            st.markdown("**50/30/20 Budget Rule**")
+            st.write(f"Needs: {needs:.2f} PKR")
+            st.write(f"Wants: {wants:.2f} PKR")
+            st.write(f"Savings: {save:.2f} PKR")
             st.progress(savings_progress)
-        with st.expander("Investment Recommendations", expanded=True):
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            st.markdown('<div class="insight-card">', unsafe_allow_html=True)
+            st.markdown("**Investment Recommendations**")
             st.info(investment_sug)
-        with st.expander("Savings Goal Tracker", expanded=True):
-            st.write(f"Goal: {goal_purpose} – Target: {goal_amount:.2f} PKR")
-            st.write(f"Estimated Time at Current Rate: {current_sug}")
-            st.write(f"Basic Savings (20% Income): {basic_months:.0f} months")
-            st.write(f"Aggressive Savings (30% Income): {strong_months:.0f} months")
-            goal_progress = min(current_savings / goal_amount, 1.0) if goal_amount > 0 else 0
-            st.progress(goal_progress)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown('<div class="insight-card">', unsafe_allow_html=True)
+        st.markdown("**Savings Goal Tracker**")
+        st.write(f"Goal: {goal_purpose} – Target: {goal_amount:.2f} PKR")
+        st.write(f"Time at Current Rate: {current_sug}")
+        st.write(f"Basic (20%): {basic_months:.0f} months")
+        st.write(f"Aggressive (30%): {strong_months:.0f} months")
+        goal_progress = min(current_savings / goal_amount, 1.0) if goal_amount > 0 else 0
+        st.progress(goal_progress)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with tab3:
         st.subheader("Interactive Visualizations")
-        # Interactive Bar Chart
+        # 1st Chart: Income vs Expenses (Already good)
         st.markdown("**Income vs Expenses**")
         data_bar = pd.DataFrame({'Category': ['Income', 'Expenses'], 'Amount': [monthly_income, monthly_expenses]})
-        chart_bar = alt.Chart(data_bar).mark_bar().encode(
+        chart_bar = alt.Chart(data_bar).mark_bar(size=100).encode(
             x='Category',
             y='Amount',
             color=alt.Color('Category', scale=alt.Scale(domain=['Income', 'Expenses'], range=['#007bff', '#dc3545'])),
             tooltip=['Category', 'Amount']
-        ).properties(width='container', height=300, title='Monthly Overview').interactive()
+        ).properties(width=600, height=400, title='Monthly Overview').interactive(bind_y=True)  # Enhanced interactivity
         st.altair_chart(chart_bar, use_container_width=True)
 
-        # Dynamic Pie Chart for Spending (Made more interactive)
+        # Improved 2nd Chart: Spending Breakdown (Donut style with hover effects)
         st.markdown("**Spending Breakdown**")
         categories = ["Food", "Bills", "Travel", "Shopping", "Health"]
         base_values = [0.20, 0.25, 0.15, 0.30, 0.10]
         values = [v * monthly_expenses for v in base_values]
         data_pie = pd.DataFrame({'Category': categories, 'Amount': values})
-        chart_pie = alt.Chart(data_pie).mark_arc(innerRadius=50).encode(
+        chart_pie = alt.Chart(data_pie).mark_arc(innerRadius=80).encode(  # Donut style
             theta='Amount:Q',
-            color='Category:N',
-            tooltip=['Category', 'Amount']
-        ).properties(width='container', height=300, title='Expense Categories').interactive()
+            color=alt.Color('Category:N', scale=alt.Scale(scheme='tableau10')),
+            tooltip=['Category', 'Amount', alt.Tooltip('Amount:Q', format='.2f')]
+        ).properties(width=600, height=400, title='Expense Categories').interactive()
         st.altair_chart(chart_pie, use_container_width=True)
 
-        # Line Chart for Trends
+        # Improved 3rd Chart: Finance Trends (Smoother lines, area fill for savings)
         st.markdown("**Finance Trends**")
         months = ["Current", "Next Month", "3 Months", "6 Months"]
         data_trend = pd.DataFrame({
@@ -263,15 +300,22 @@ if analyze_button:
             'Income': [monthly_income] * 4,
             'Expenses': [monthly_expenses] * 4
         }).melt('Period', var_name='Metric', value_name='Amount')
-        chart_line = alt.Chart(data_trend).mark_line(point=True).encode(
+        chart_line = alt.Chart(data_trend).mark_line(point={'size': 100, 'filled': True}).encode(
             x='Period:O',
             y='Amount:Q',
-            color='Metric:N',
-            tooltip=['Period', 'Metric', 'Amount']
-        ).properties(width='container', height=350, title='Projected Trends').interactive()
-        st.altair_chart(chart_line, use_container_width=True)
+            color=alt.Color('Metric:N', scale=alt.Scale(scheme='set2')),
+            tooltip=['Period', 'Metric', 'Amount'],
+            strokeDash=alt.condition(alt.datum.Metric == 'Savings', alt.value([5, 5]), alt.value([0]))  # Dashed for savings
+        ).properties(width=800, height=450, title='Projected Trends').interactive()
+        # Add area for Savings
+        area = alt.Chart(data_trend[data_trend['Metric'] == 'Savings']).mark_area(opacity=0.3).encode(
+            x='Period:O',
+            y='Amount:Q',
+            color='Metric:N'
+        )
+        st.altair_chart(chart_line + area, use_container_width=True)
 
-    # Professional PDF Report
+    # Generate Report Section
     st.subheader("Generate Report")
     pdf_buffer = io.BytesIO()
     doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
@@ -282,7 +326,6 @@ if analyze_button:
     story.append(Paragraph(f"Generated on: {datetime.now().strftime('%Y-%m-%d')}", styles['Normal']))
     story.append(Spacer(1, 0.1*inch))
 
-    # Metrics Table
     data = [
         ['Key Metric', 'Value'],
         ['Net Worth', f"{net_worth:.2f} PKR"],
@@ -305,7 +348,6 @@ if analyze_button:
     ]))
     story.append(table)
 
-    # Add Charts to PDF
     img_buffer1 = io.BytesIO()
     fig1, ax1 = plt.subplots(figsize=(5,3))
     ax1.bar(["Income", "Expenses"], [monthly_income, monthly_expenses], color=['#007bff', '#dc3545'])
@@ -326,6 +368,4 @@ if analyze_button:
 
     doc.build(story)
     pdf_buffer.seek(0)
-    st.download_button("📄 Download PDF Report", pdf_buffer, "finance_report.pdf", "application/pdf", use_container_width=True)
-
-# No balloons or animations for professional look
+    st.download_button("Download PDF Report", pdf_buffer, "finance_report.pdf", "application/pdf", use_container_width=True)
