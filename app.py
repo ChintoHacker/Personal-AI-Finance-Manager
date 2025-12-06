@@ -137,7 +137,7 @@ if st.sidebar.button("Analyze & Predict"):
     st.write(f"Next 6 Months (Avg): {results['next_6_months']:.2f} PKR")
 
     st.subheader("Net Worth Calculator")
-    st.write(f"Net Worth: {net_worth:.2f} PKR (Savings + Investments - Debt)")
+    st.write(f"Net Worth: {net_worth:.2f} PKR ")
 
     st.subheader("Emergency Fund Status")
     st.write(f"Needed for 6 Months: {emergency_needed:.2f} PKR")
@@ -195,3 +195,4 @@ if st.sidebar.button("Analyze & Predict"):
     doc.build(story)
     pdf_buffer.seek(0)
     st.download_button("Download PDF Report", pdf_buffer, "finance_report.pdf", "application/pdf")
+
