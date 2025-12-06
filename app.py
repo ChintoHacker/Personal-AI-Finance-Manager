@@ -6,175 +6,198 @@ import base64
 from fpdf import FPDF
 from io import BytesIO
 
-# Page Setup
-st.set_page_config(page_title="Apka Financial Advisor", page_icon="money_with_wings", layout="wide")
+st.set_page_config(page_title="Apka Financial Advisor", page_icon="💸", layout="wide")
 
-# Custom CSS - Bilkul Modern & Stylish
+# ========== ADVANCED MODERN CSS ==========
 st.markdown("""
 <style>
-    .main {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh;}
-    .sidebar .stButton>button {background: #ff6b6b; color: white; font-weight: bold;}
-    .header {
-        background: rgba(255,255,255,0.95); padding: 20px; border-radius: 15px;
-        text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        margin: 20px; backdrop-filter: blur(10px);
-    }
-    .title {font-size: 42px; background: linear-gradient(90deg, #667eea, #764ba2);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;}
-    .nav-btn {
-        background: linear-gradient(45deg, #667eea, #764ba2); color: white;
-        border: none; padding: 12px 25px; margin: 0 10px; border-radius: 50px;
-        font-weight: bold; box-shadow: 0 5px 15px rgba(102,126,234,0.4);
-        transition: all 0.3s; cursor: pointer;
-    }
-    .nav-btn:hover {transform: translateY(-5px); box-shadow: 0 15px 30px rgba(102,126,234,0.6);}
-    .nav-btn.active {background: #ff6b6b; transform: scale(1.1);}
-    .card {
-        background: white; padding: 25px; border-radius: 20px; margin: 15px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s; text-align: center;
-    }
-    .card:hover {transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.2);}
-    .big-number {font-size: 38px; font-weight: bold; color: #667eea;}
-    .insight-card {
-        background: linear-gradient(135deg, #ffeaa7, #fab1a0); padding: 20px;
-        border-radius: 15px; margin: 10px; box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    }
-    .goal-bar {height: 30px; border-radius: 15px; background: #ddd; overflow: hidden;}
-    .goal-fill {height: 100%; background: linear-gradient(90deg, #55efc4, #00b894); transition: width 1s;}
+body {background:#0f172a;}
+.main {background: linear-gradient(135deg, #0f172a, #020617);}
+
+.glow-btn button {
+    background: linear-gradient(45deg, #7c3aed, #3b82f6);
+    color: white; border: none; padding: 14px 30px;
+    border-radius: 50px; font-weight: bold;
+    box-shadow: 0 0 15px rgba(124,58,237,0.8);
+    transition: 0.3s ease;
+}
+.glow-btn button:hover {
+    box-shadow: 0 0 40px rgba(124,58,237,1);
+    transform: scale(1.08);
+}
+
+.card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: .3s ease;
+}
+.card:hover {transform: translateY(-5px);}
+
+.insight {
+    background: linear-gradient(135deg, #1e293b, #020617);
+    padding: 20px;
+    border-radius: 16px;
+    border-left: 6px solid #7c3aed;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+.progress-bar {
+    background:#1e293b;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 28px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+.progress-fill {
+    height:100%;
+    background:linear-gradient(90deg,#22c55e,#4ade80);
+    box-shadow: 0 0 15px rgba(34,197,94,0.9);
+    transition: width 0.8s ease;
+}
+
+.pdf-btn {
+    background: linear-gradient(45deg,#22c55e,#16a34a);
+    color:white;padding:14px;border:none;border-radius:12px;
+    font-size:16px;font-weight:bold;cursor:pointer;
+    box-shadow:0 0 20px rgba(34,197,94,0.8);
+}
 </style>
 """, unsafe_allow_html=True)
 
-# Header
-st.markdown('<div class="header"><h1 class="title">Apka Reliable Financial Advisor</h1>', unsafe_allow_html=True)
-col1, col2, col3 = st.columns(3)
-with col1:
-    if st.button("Dashboard", key="d1"):
-        st.session_state.page = "dashboard"
-with col2:
-    if st.button("AI Insights", key="d2"):
-        st.session_state.page = "insights"
-with col3:
-    if st.button("Visualizations", key="d3"):
-        st.session_state.page = "visuals"
-st.markdown('</div>', unsafe_allow_html=True)
-
-# Default Page
-if 'page' not in st.session_state:
-    st.session_state.page = "dashboard"
-
-# Sidebar - Clean & Stylish
+# ========== SIDEBAR ==========
 with st.sidebar:
-    # Option 1: Direct base64 use karo (sabse easy aur working)
-    
-    st.sidebar.image("https://img.icons8.com/fluency/100/money-bag.png", width=100)
-    st.header("Your Details (PKR)")
+    st.image("https://img.icons8.com/fluency/100/money-bag.png", width=100)
+    st.header("Your Data")
+
     monthly_income = st.number_input("Monthly Income", 0, 1000000, 85000, 5000)
     monthly_expenses = st.number_input("Monthly Expenses", 0, 1000000, 55000, 5000)
     current_savings = st.number_input("Current Savings", 0, 10000000, 150000, 10000)
     total_debt = st.number_input("Total Debt", 0, 5000000, 0, 10000)
-    current_investments = st.number_input("Current Investments", 0, 10000000, 0, 10000)
-    goal_purpose = st.text_input("Goal Purpose", "Car")
-    goal_amount = st.number_input("Goal Amount", 1000, 10000000, 500000, 10000)
-    
-    if st.button("Analyze Now", use_container_width=True):
-        st.success("Analysis Done!")
+    current_investments = st.number_input("Investments", 0, 10000000, 0, 10000)
 
-# Calculations
+    goal_purpose = st.text_input("Goal Name", "Car")
+    goal_amount = st.number_input("Goal Amount", 1000, 10000000, 500000, 10000)
+
+    st.markdown('<div class="glow-btn">', unsafe_allow_html=True)
+    analyze = st.button("Analyze Now")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ========== CALCULATIONS ==========
 total_balance = monthly_income + current_savings
 net_worth = current_savings + current_investments - total_debt
-saving_rate = ((monthly_income - monthly_expenses) / monthly_income * 100) if monthly_income > 0 else 0
-goal_progress = min(100, (current_savings / goal_amount * 100) if goal_amount > 0 else 0)
+saving_rate = ((monthly_income - monthly_expenses) / monthly_income * 100) if monthly_income else 0
+goal_progress = min(100, (current_savings / goal_amount * 100)) if goal_amount else 0
+months_left = round((goal_amount - current_savings) / max(1, (monthly_income - monthly_expenses)),1)
 
-# Pages
-if st.session_state.page == "dashboard":
-    st.markdown("### Your Financial Summary")
-    cols = st.columns(6)
-    metrics = [
-        ("Total Balance", f"Rs {total_balance:,.0f}", "#667eea"),
-        ("Income", f"Rs {monthly_income:,.0f}", "#55efc4"),
-        ("Expenses", f"Rs {monthly_expenses:,.0f}", "#ff7675"),
-        ("Savings", f"Rs {current_savings:,.0f}", "#74b9ff"),
-        ("Net Worth", f"Rs {net_worth:,.0f}", "#a29bfe"),
-        ("Saving Rate", f"{saving_rate:.1f}%", "#fd79a8")
+# ========== TOP NAV ==========
+col1,col2,col3 = st.columns(3)
+with col1:
+    st.markdown('<div class="glow-btn">', unsafe_allow_html=True)
+    if st.button("Dashboard"): st.session_state.page="dashboard"
+    st.markdown('</div>', unsafe_allow_html=True)
+with col2:
+    st.markdown('<div class="glow-btn">', unsafe_allow_html=True)
+    if st.button("AI Insights"): st.session_state.page="insights"
+    st.markdown('</div>', unsafe_allow_html=True)
+with col3:
+    st.markdown('<div class="glow-btn">', unsafe_allow_html=True)
+    if st.button("Visuals"): st.session_state.page="visuals"
+    st.markdown('</div>', unsafe_allow_html=True)
+
+if "page" not in st.session_state:
+    st.session_state.page="dashboard"
+
+# ========== DASHBOARD ==========
+if st.session_state.page=="dashboard":
+    st.title("📊 Smart Financial Dashboard")
+
+    a,b,c,d = st.columns(4)
+    cards = [
+        ("Total Balance", total_balance),
+        ("Monthly Income", monthly_income),
+        ("Monthly Expenses", monthly_expenses),
+        ("Net Worth", net_worth)
     ]
-    for col, (label, value, color) in zip(cols, metrics):
+    for col,(title,val) in zip([a,b,c,d],cards):
         with col:
-            st.markdown(f'<div class="card"><h4>{label}</h4><p class="big-number" style="color:{color}">{value}</p></div>', True)
+            st.markdown(f"""
+            <div class="card">
+            <h4>{title}</h4>
+            <h2>Rs {val:,.0f}</h2>
+            </div>
+            """,True)
 
-elif st.session_state.page == "insights":
-    st.markdown("### AI Smart Insights")
+# ========== AI INSIGHTS ==========
+elif st.session_state.page=="insights":
+    st.title("🤖 AI Smart Insights")
+
     insights = [
-        ("High Expense Alert", "Food & Shopping taking 65% of expenses. Reduce by Rs 10,000/month", "warning"),
-        ("Great Saving Rate!", f"You're saving {saving_rate:.1f}% — Better than 80% Pakistanis!", "tada"),
-        ("Emergency Fund", f"You can survive {current_savings//monthly_expenses} months without income", "shield"),
-        ("Debt Status", "You're debt-free! Amazing financial discipline", "star")
+        f"💡 You save {saving_rate:.1f}% of income — Great job!",
+        f"📉 You can reach your goal in approx {months_left} months",
+        f"🛡️ Emergency survival: {round(current_savings/max(1,monthly_expenses),1)} months",
+        "✅ Your financial stability is improving"
     ]
-    for title, text, emoji in insights:
-        st.markdown(f'<div class="insight-card"><h3>{emoji} {title}</h3><p>{text}</p></div>', True)
-    
-    st.markdown("### Your Goal Progress")
-    st.markdown(f'<h2>{goal_purpose}</h2>', True)
-    st.markdown(f'<div class="goal-bar"><div class="goal-fill" style="width:{goal_progress}%"></div></div>', True)
-    st.markdown(f"<h3>{goal_progress:.1f}% Complete • Rs {current_savings:,.0f} / Rs {goal_amount:,.0f}</h3>", True)
 
-elif st.session_state.page == "visuals":
-    st.markdown("### Income vs Expenses")
+    for msg in insights:
+        st.markdown(f'<div class="insight">{msg}</div>',True)
+
+    st.subheader("🎯 Goal Progress")
+    st.markdown(f"""
+    <div class="progress-bar">
+        <div class="progress-fill" style="width:{goal_progress}%"></div>
+    </div>
+    <h3>{goal_progress:.1f}% — Rs {current_savings:,.0f} / Rs {goal_amount:,.0f}</h3>
+    """,True)
+
+# ========== VISUAL PAGE (IMPROVED) ==========
+elif st.session_state.page=="visuals":
+    st.title("📈 Smart Visuals")
+
+    # Improved Bar Chart
     fig = go.Figure()
-    fig.add_trace(go.Bar(x=['Nov', 'Dec', 'Jan', 'Feb'], y=[80000, 85000, 90000, 95000], name='Income', marker_color='#55efc4'))
-    fig.add_trace(go.Bar(x=['Nov', 'Dec', 'Jan', 'Feb'], y=[65000, 55000, 60000, 58000], name='Expenses', marker_color='#ff6b6b'))
-    fig.update_layout(barmode='group', template='plotly_dark')
+    fig.add_trace(go.Bar(name="Income", x=["Jan","Feb","Mar","Apr"], y=[80000,85000,90000,95000]))
+    fig.add_trace(go.Bar(name="Expenses", x=["Jan","Feb","Mar","Apr"], y=[60000,62000,65000,68000]))
+    fig.update_layout(barmode="group", template="plotly_dark")
     st.plotly_chart(fig, use_container_width=True)
-    
-    st.markdown("### Spending Breakdown")
-    fig2 = px.pie(values=[30, 25, 20, 15, 10], names=['Food', 'Transport', 'Shopping', 'Bills', 'Fun'], color_discrete_sequence=px.colors.qualitative.Pastel)
-    st.plotly_chart(fig2, use_container_width=True)
-    
-    st.markdown("### Future Finance Trend")
-    fig3 = go.Figure()
-    fig3.add_trace(go.Scatter(x=['Current', 'Next', '3M Avg', '6M Avg'], y=[150000, 180000, 250000, 380000], 
-                              mode='lines+markers', name='Savings Growth', line=dict(color='#55efc4', width=5)))
-    fig3.add_trace(go.Scatter(x=['Current', 'Next', '3M Avg', '6M Avg'], y=[85000]*4, name='Income', line=dict(dash='dot')))
-    fig3.add_trace(go.Scatter(x=['Current', 'Next', '3M Avg', '6M Avg'], y=[55000]*4, name='Expenses', line=dict(dash='dash', color='red')))
-    fig3.update_layout(template='plotly_dark', title="You're on track to be rich!")
-    st.plotly_chart(fig3, use_container_width=True)
 
-# PDF Export - Ab Bohot Achhi Hai
-if st.sidebar.button("Download Beautiful PDF Report"):
+    # Improved Line Chart
+    fig2 = go.Figure()
+    fig2.add_trace(go.Scatter(x=["Now","+1M","+3M","+6M"], y=[150000,180000,220000,300000], mode="lines+markers"))
+    fig2.update_layout(template="plotly_dark", title="Savings Growth Prediction")
+    st.plotly_chart(fig2, use_container_width=True)
+
+# ========== PERFECT PDF EXPORT ==========
+if st.sidebar.button("📄 Download Smart PDF"):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", "B", 20)
-    pdf.set_text_color(102, 126, 234)
-    pdf.cell(0, 20, "Apka Financial Report", ln=1, align='C')
-    pdf.set_font("Arial", "", 12)
-    pdf.set_text_color(0,0,0)
-    pdf.cell(0, 10, f"Generated on: {datetime.now().strftime('%d %B %Y')}", ln=1)
-    pdf.ln(10)
-    pdf.set_font("Arial", "B", 14)
-    pdf.set_fill_color(102, 126, 234)
-    pdf.set_text_color(255,255,255)
-    pdf.cell(0, 12, "  Your Financial Summary  ", fill=True, ln=1)
-    pdf.set_text_color(0,0,0)
-    pdf.set_font("Arial", "", 12)
-    pdf.multi_cell(0, 10, f"""
-Total Available Money (Income + Savings): Rs {total_balance:,.0f}
-→ Yeh woh paisa hai jo aap abhi use kar sakte hain
+    pdf.set_font("Arial","B",20)
+    pdf.cell(0,10,"Smart Financial Report",ln=1,align="C")
 
-Monthly Income: Rs {monthly_income:,.0f}
-Monthly Expenses: Rs {monthly_expenses:,.0f}
-Current Savings: Rs {current_savings:,.0f}
-Net Worth: Rs {net_worth:,.0f}
+    pdf.set_font("Arial","",12)
+    pdf.cell(0,10,f"Generated: {datetime.now().strftime('%d %B %Y')}",ln=1)
 
-Saving Rate: {saving_rate:.1f}%
-→ Bohot achha! 20% se zyada target karo
+    pdf.ln(5)
+    pdf.cell(0,10,f"Total Balance: Rs {total_balance:,.0f}",ln=1)
+    pdf.cell(0,10,f"Income: Rs {monthly_income:,.0f}",ln=1)
+    pdf.cell(0,10,f"Expenses: Rs {monthly_expenses:,.0f}",ln=1)
+    pdf.cell(0,10,f"Savings: Rs {current_savings:,.0f}",ln=1)
+    pdf.cell(0,10,f"Net Worth: Rs {net_worth:,.0f}",ln=1)
+    pdf.ln(5)
+    pdf.cell(0,10,f"Goal: {goal_purpose}",ln=1)
+    pdf.cell(0,10,f"Progress: {goal_progress:.1f}%",ln=1)
 
-Goal "{goal_purpose}": {goal_progress:.1f}% Complete
-→ Bas thodi aur mehnat, ho jayega!
-    """)
-    buffer = BytesIO()
-    pdf.output(buffer)
-    b64 = base64.b64encode(buffer.getvalue()).decode()
-    st.sidebar.markdown(f'<a href="data:application/pdf;base64,{b64}" download="Apka_Report_{datetime.now().strftime("%d%m%Y")}.pdf"><button style="background:#ff6b6b;color:white;padding:15px;border:none;border-radius:10px;font-size:16px;">Download PDF Now</button></a>', True)
+    buf = BytesIO()
+    pdf.output(buf)
+    b64 = base64.b64encode(buf.getvalue()).decode()
 
-st.sidebar.success("Made with love by your AI Financial Dost")
-
-
+    st.sidebar.markdown(
+        f'<a href="data:application/pdf;base64,{b64}" download="Smart_Report.pdf">'
+        f'<button class="pdf-btn">✅ Download PDF Now</button></a>',
+        unsafe_allow_html=True
+    )
