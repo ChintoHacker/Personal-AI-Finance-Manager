@@ -1,343 +1,159 @@
-# app_redesigned.py
-# Final improved version — bug fixes and stability improvements
-# Save as `app_redesigned.py` and run: streamlit run app_redesigned.py
-
+# app.py — Final Professional & Beautiful Pakistani Finance Manager
 import streamlit as st
 import pandas as pd
 import numpy as np
-import joblib
-from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
-from datetime import datetime
 import io
+from datetime import datetime
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
-import altair as alt
+from reportlab.lib import colors
 
-# Page config
-st.set_page_config(page_title="Personal AI Finance Manager", page_icon="💠", layout="wide")
+# Page Config
+st.set_page_config(page_title="PakFinance AI", page_icon="Pakistan Flag", layout="wide")
 
-# Initialize session state keys used for button clicks to avoid KeyError
-if 'analyze_click' not in st.session_state:
-    st.session_state['analyze_click'] = False
-if 'report_click' not in st.session_state:
-    st.session_state['report_click'] = False
-
-# ---------- Custom CSS ----------
-st.markdown(r"""
+# Gorgeous Design
+st.markdown("""
 <style>
-:root{--bg:#eaf6ff;--card:#ffffff;--accent:#0b84ff;--accent-2:#00c2a8;--muted:#6c757d}
-body { background: var(--bg); }
-.block-container { padding: 28px; }
-.header-glow{
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-weight:800;
-  color: #04263b;
-  font-size:42px;
-  text-shadow: 0 6px 20px rgba(11,132,255,0.18), 0 2px 6px rgba(0,0,0,0.06);
-}
-.header-sub{ color: #0b4f7a; margin-top: -8px; margin-bottom: 18px; }
-.stat-card{ background: var(--card); border-radius:14px; padding:18px; box-shadow: 0 6px 20px rgba(5,40,60,0.06); border-left:6px solid rgba(11,132,255,0.14);}
-.stat-title{ color:#6c757d; font-size:14px; }
-.stat-value{ color:#04263b; font-size:26px; font-weight:700; }
-.stat-sub{ color:var(--muted); font-size:12px; margin-top:6px }
-section[data-testid="stSidebar"] .css-1d391kg{ background: linear-gradient(180deg,#f2fbff,#e6f5ff); border-radius:8px; padding:18px; }
-.sidebar-h{ font-weight:700; color:#04263b }
-.small-muted{ color: #6c757d; font-size:13px }
-.insight{ background: linear-gradient(180deg,#ffffff,#fbfdff); border-radius:12px; padding:18px; box-shadow:0 8px 20px rgba(3,50,75,0.06);}
-.invest-popup{ background:linear-gradient(90deg,#fff, #f7fff9); border-radius:10px; padding:14px; }
+    .main {background: linear-gradient(135deg, #e3f2fd, #bbdefb); font-family: 'Segoe UI', sans-serif;}
+    .header {font-size: 46px; font-weight: 800; color: #1a4971; text-align: center; text-shadow: 0 4px 10px rgba(0,0,0,0.1);}
+    .subheader {font-size: 20px; color: #0d47a1; text-align: center; margin-bottom: 30px;}
+    .card {background: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin: 15px 0;}
+    .big-number {font-size: 36px; font-weight: 900; color: #1565c0;}
+    .success-box {background: #e8f5e8; border-left: 6px solid #4caf50; padding: 16px; border-radius: 8px;}
+    .warning-box {background: #fff3e0; border-left: 6px solid #ff9800; padding: 16px; border-radius: 8px;}
+    .error-box {background: #ffebee; border-left: 6px solid #f44336; padding: 16px; border-radius: 8px;}
+    .info-box {background: #e3f2fd; border-left: 6px solid #2196f3; padding: 16px; border-radius: 8px;}
+    .stButton>button {background: linear-gradient(90deg, #1976d2, #42a5f5); color: white; border-radius: 12px; padding: 14px; font-weight: bold; width: 100%; box-shadow: 0 6px 15px rgba(25,118,210,0.4);}
+    .stButton>button:hover {transform: translateY(-3px); box-shadow: 0 10px 20px rgba(25,118,210,0.5);}
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- Helpers: Load / Train Model ----------
-@st.cache_resource
-def load_and_train_model(path_csv="personal_finance_tracker_dataset.csv"):
-    """Load CSV if available. If not, generate a small synthetic dataset so UI works.
-    Train a RandomForestRegressor to predict next-month savings (single target).
-    """
-    try:
-        df = pd.read_csv(path_csv)
-    except Exception:
-        # Fallback synthetic data
-        dates = pd.date_range(end=pd.Timestamp.today(), periods=24, freq='M')
-        df = pd.DataFrame({
-            'date': dates,
-            'monthly_income': np.random.randint(40000, 120000, size=len(dates)),
-            'monthly_expense_total': np.random.randint(20000, 90000, size=len(dates)),
-            'actual_savings': np.random.randint(5000, 40000, size=len(dates)),
-            'credit_score': np.random.randint(550, 800, size=len(dates))
-        })
-    df.columns = df.columns.str.strip()
-    df['date'] = pd.to_datetime(df['date'])
-    df_monthly = df.groupby(pd.Grouper(key='date', freq='ME')).agg({
-        'monthly_income': 'mean',
-        'monthly_expense_total': 'mean',
-        'actual_savings': 'mean',
-        'credit_score': 'mean'
-    }).reset_index().fillna(0)
-    df_monthly = df_monthly.rename(columns={'monthly_income': 'income', 'monthly_expense_total': 'expenses', 'actual_savings': 'savings'})
-    df_monthly['extra_spendings'] = np.maximum(0, df_monthly['expenses'] - df_monthly['savings'])
-    df_monthly['savings_next_1'] = df_monthly['savings'].shift(-1)
-    df_monthly = df_monthly.dropna()
-    if len(df_monthly) < 4:
-        # Create minimal dataset to avoid errors
-        df_monthly = pd.concat([df_monthly]*4, ignore_index=True)
-    X = df_monthly[['income', 'expenses', 'extra_spendings', 'credit_score']]
-    Y = df_monthly[['savings_next_1']]
-    scaler = StandardScaler()
-    Xs = scaler.fit_transform(X)
-    X_train, X_test, Y_train, Y_test = train_test_split(Xs, Y, test_size=0.2, random_state=42)
-    model = RandomForestRegressor(n_estimators=150, random_state=42)
-    model.fit(X_train, Y_train.values.ravel())
-    return model, scaler
+# Title
+st.markdown("<div class='header'>PakFinance AI</div>", unsafe_allow_html=True)
+st.markdown("<div class='subheader'>Apka Smart Financial Dost — Bilkul Pakistani Style Mein</div>", unsafe_allow_html=True)
 
-model, scaler = load_and_train_model()
-
-# ---------- Sidebar (Upgraded) ----------
+# Sidebar Inputs
 with st.sidebar:
-    st.markdown("<div class='sidebar-h'>Personal AI Finance — Controls</div>", unsafe_allow_html=True)
-    st.markdown("---")
-    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0.0, value=50000.0, step=1000.0)
-    monthly_expenses = st.number_input("Monthly Expenses (PKR)", min_value=0.0, value=30000.0, step=1000.0)
-    current_savings = st.number_input("Current Savings (PKR)", min_value=0.0, value=15000.0, step=1000.0)
-    debt = st.number_input("Total Debt (PKR)", min_value=0.0, value=0.0, step=1000.0)
-    investments = st.number_input("Current Investments (PKR)", min_value=0.0, value=0.0, step=1000.0)
-    st.markdown("---")
-    goal_purpose = st.text_input("Saving Goal Purpose", value="Car")
-    goal_amount = st.number_input("Goal Amount (PKR)", min_value=0.0, value=100000.0, step=1000.0)
-    st.markdown("---")
+    st.image("https://flagcdn.com/pk.png", width=80)
+    st.markdown("### Your Details")
+    monthly_income = st.number_input("Monthly Income (PKR)", 20000, 500000, 80000, 5000)
+    monthly_expenses = st.number_input("Monthly Expenses (PKR)", 10000, 400000, 45000, 5000)
+    current_savings = st.number_input("Current Savings (PKR)", 0, 10000000, 100000, 10000)
+    debt = st.number_input("Total Debt (PKR)", 0, 5000000, 0, 5000)
+    investments = st.number_input("Current Investments (PKR)", 0, 10000000, 50000, 10000)
+    goal_purpose = st.text_input("Saving Goal", "Car")
+    goal_amount = st.number_input("Goal Amount (PKR)", 100000, 50000000, 1500000, 50000)
 
-    # Buttons that toggle session state instead of direct reruns
-    if st.button("🔍 Analyze — Quick", key="sb_analyze"):
-        st.session_state['analyze_click'] = True
-    if st.button("📄 Download Quick Report", key="sb_report"):
-        st.session_state['report_click'] = True
-    if st.button("♻️ Reset Inputs", key="sb_reset"):
-        # Reset is achieved by clearing session state keys and rerunning
-        for k in ['analyze_click', 'report_click']:
-            st.session_state[k] = False
-        st.experimental_rerun()
+    if st.button("Analyze My Finances"):
+        st.success("Analysis Complete!")
 
-# ---------- Main Navigation ----------
-page = st.radio("", ("Landing Dashboard", "Insights & Goals", "Visualizations"), horizontal=True)
+# Calculations
+monthly_saving = monthly_income - monthly_expenses
+net_worth = current_savings + investments - debt
+saving_ratio = (monthly_saving / monthly_income) * 100 if monthly_income > 0 else 0
+expense_ratio = (monthly_expenses / monthly_income) * 100 if monthly_income > 0 else 0
+emergency_needed = monthly_expenses * 6
+emergency_progress = min(current_savings / emergency_needed, 1.0) if emergency_needed > 0 else 0
 
-# ---------- Calculations ----------
-def compute_financials(income, expenses, savings, debt, investments):
-    total_balance = income - expenses + savings
-    net_worth = savings + investments - debt
-    saving_rate = (savings / income) * 100 if income > 0 else 0
-    expense_rate = (expenses / income) * 100 if income > 0 else 0
-    monthly_saving = income - expenses
-    emergency_needed = expenses * 6
-    emergency_progress = min(max(savings / emergency_needed, 0.0), 1.0) if emergency_needed>0 else 0
-    return {
-        'total_balance': total_balance,
-        'net_worth': net_worth,
-        'saving_rate': saving_rate,
-        'expense_rate': expense_rate,
-        'monthly_saving': monthly_saving,
-        'emergency_needed': emergency_needed,
-        'emergency_progress': emergency_progress
-    }
+# Main Layout
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.markdown(f"<div class='card'><center><div class='big-number'>₨ {monthly_saving:,.0f}</div><small>Monthly Saving</small></center></div>", unsafe_allow_html=True)
+with col2:
+    st.markdown(f"<div class='card'><center><div class='big-number'>₨ {net_worth:,.0f}</div><small>Net Worth</small></center></div>", unsafe_allow_html=True)
+with col3:
+    st.markdown(f"<div class='card'><center><div class='big-number'>{saving_ratio:.1f}%</div><small>Saving Rate</small></center></div>", unsafe_allow_html=True)
 
-fin = compute_financials(monthly_income, monthly_expenses, current_savings, debt, investments)
+# AI Insights
+st.markdown("### AI Insights - Apki Financial Health")
+st.write(f"**Saving Rate:** {saving_ratio:.1f}% | **Expense Rate:** {expense_ratio:.1f}%")
 
-# Prediction helper (predict next-month savings)
-def predict_next_savings(income, expenses, savings, credit_score=650):
-    extra = max(0, expenses - savings)
-    X_new = np.array([[income, expenses, extra, credit_score]])
-    try:
-        X_scaled = scaler.transform(X_new)
-        p = model.predict(X_scaled)[0]
-        return float(np.round(p, 2))
-    except Exception:
-        return float(0.0)
-
-# ---------- Page 1: Landing Dashboard ----------
-if page == "Landing Dashboard":
-    st.markdown("<div class='header-glow'>💠 Personal AI Finance Manager</div>", unsafe_allow_html=True)
-    st.markdown("<div class='header-sub'>A beautiful, interactive quick view of your finances</div>", unsafe_allow_html=True)
-
-    col1, col2, col3 = st.columns([3,3,2])
-    with col1:
-        if st.button("Analyze Finances", key="main_analyze"):
-            st.session_state['analyze_click'] = True
-    with col2:
-        if st.button("Generate Report", key="main_report"):
-            st.session_state['report_click'] = True
-    with col3:
-        if st.button("Reset", key="main_reset"):
-            for k in ['analyze_click', 'report_click']:
-                st.session_state[k] = False
-            st.experimental_rerun()
-
-    st.write("---")
-
-    # KPI Cards
-    k1, k2, k3, k4 = st.columns(4)
-    with k1:
-        st.markdown("<div class='stat-card'>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-title'>Total Balance</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='stat-value'>{fin['total_balance']:,.2f} PKR</div>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-sub'>Income - Expenses + Savings</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with k2:
-        st.markdown("<div class='stat-card'>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-title'>Net Worth</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='stat-value'>{fin['net_worth']:,.2f} PKR</div>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-sub'>Savings + Investments - Debt</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with k3:
-        st.markdown("<div class='stat-card'>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-title'>Monthly Saving</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='stat-value'>{fin['monthly_saving']:,.2f} PKR</div>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-sub'>Income - Expenses</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with k4:
-        st.markdown("<div class='stat-card'>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-title'>Savings Ratio</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='stat-value'>{fin['saving_rate']:.2f}%</div>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-sub'>Current Savings / Income</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    st.write("---")
-    st.markdown("<div class='insight'>", unsafe_allow_html=True)
-    st.markdown("<h3 style='margin:6px 0 10px 0'>Final Predictions</h3>", unsafe_allow_html=True)
-    st.write("Only essential numbers are shown here for a clean quick decision-making view.")
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    if st.session_state.get('analyze_click'):
-        with st.expander("🔔 Pro Tips & Next Steps", expanded=True):
-            st.write("- Automate savings with standing instructions to reach goals faster.")
-            st.write("- Revisit budget categories monthly and move 10% of 'wants' to 'savings' when possible.")
-            st.write("- Consider a high-yield savings account for emergency funds.")
-
-# ---------- Page 2: Insights & Goals ----------
-elif page == "Insights & Goals":
-    st.markdown("<div class='header-glow'>Insights & Smart Goals</div>", unsafe_allow_html=True)
-    st.markdown("<div class='header-sub'>Gorgeous cards, interactive insight boxes and improved investment suggestions</div>", unsafe_allow_html=True)
-
-    col_left, col_right = st.columns([2,1])
-
-    with col_left:
-        st.markdown("<div class='insight'>", unsafe_allow_html=True)
-        st.markdown(f"<h4 style='margin-bottom:6px'>🎯 Saving Goal — {goal_purpose}</h4>", unsafe_allow_html=True)
-        st.write(f"Goal Target: {goal_amount:,.0f} PKR")
-        if fin['monthly_saving'] > 0:
-            months_needed = goal_amount / fin['monthly_saving']
-            st.markdown(f"**At current monthly saving ({fin['monthly_saving']:,.0f} PKR):** ~ {months_needed:.0f} months (~{months_needed/12:.1f} years)")
-        else:
-            st.error("You are not saving monthly. Increase income or reduce expenses to start progress.")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
-
-        st.markdown("<div class='insight'>", unsafe_allow_html=True)
-        st.markdown("<h4>🤖 AI Insights</h4>", unsafe_allow_html=True)
-        st.write(f"Savings Ratio: **{fin['saving_rate']:.1f}%** — Expense Ratio: **{fin['expense_rate']:.1f}%**")
-        if fin['expense_rate'] > 80:
-            st.warning("High Spending! Aap 80%+ income kharch kar rahe ho. Consider trimming wants and subscriptions.")
-        elif fin['expense_rate'] > 60:
-            st.info("Balanced but improve savings — try pushing savings to 20%+")
-        else:
-            st.success("Great — good control on expenses!")
-
-        # Use expander instead of modal (more stable across Streamlit versions)
-        with st.expander("Show detailed AI suggestions"):
-            st.write("**Personalized Suggestions:**")
-            st.write("1. Setup auto-transfer to savings every payday.")
-            st.write("2. Use 30-day rules: freeze one non-essential spending for a month and track results.")
-            st.write("3. Consider index funds for long-term investments if you can consistently save.")
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
-
-        st.markdown("<div class='insight'>", unsafe_allow_html=True)
-        st.markdown("<h4>🛟 Emergency Fund</h4>", unsafe_allow_html=True)
-        st.write(f"Needed (6 months): {fin['emergency_needed']:,.0f} PKR")
-        st.write(f"Progress: {current_savings:,.0f} / {fin['emergency_needed']:,.0f}")
-        st.progress(fin['emergency_progress'])
-        if fin['emergency_progress'] < 0.5:
-            st.warning("Emergency fund kam hai — aim for automatic transfers each month until target.")
-        else:
-            st.success("Good progress on emergency fund — keep reviewing yearly.")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_right:
-        st.markdown("<div class='insight'>", unsafe_allow_html=True)
-        st.markdown("<h4>💼 Investment Recommendations</h4>", unsafe_allow_html=True)
-        # saving_rate_percent = fin['monthly_saving'] / monthly_income if monthly_income>0 else 0
-        saving_rate_percent = 0.0
-        if monthly_income > 0:
-            saving_rate_percent = fin['monthly_saving'] / monthly_income
-        if saving_rate_percent > 0.3:
-            st.success("Aggressive Profile")
-            st.write("Recommendation: Consider a growth-heavy portfolio — e.g., equity index funds, small allocation to international funds and gold.")
-        elif saving_rate_percent > 0.1:
-            st.info("Balanced Profile")
-            st.write("Recommendation: Balanced mix — equities + bonds + small gold allocation.")
-        else:
-            st.warning("Conservative / Starting Profile")
-            st.write("Recommendation: Build emergency fund first. Then start with low-cost bond funds and small equity SIPs.")
-
-        with st.expander("See sample portfolios & risks"):
-            st.markdown("<div class='invest-popup'>", unsafe_allow_html=True)
-            st.write("**Aggressive (for high savers):** 80% Stocks, 15% Bonds, 5% Gold — High risk, high return over long-term.")
-            st.write("**Balanced:** 60% Stocks, 35% Bonds, 5% Gold — Moderate risk.")
-            st.write("**Conservative:** 40% Stocks, 55% Bonds, 5% Gold — Lower volatility.")
-            st.markdown("</div>", unsafe_allow_html=True)
-
-# ---------- Page 3: Visualizations ----------
+if expense_ratio > 100:
+    st.markdown("<div class='error-box'>Overspending! Aap income se zyada kharch kar rahe hain.</div>", unsafe_allow_html=True)
+elif expense_ratio > 80:
+    st.markdown("<div class='warning-box'>High Spending! 80%+ income kharch ho raha. 50-30-20 rule follow karo.</div>", unsafe_allow_html=True)
+elif expense_ratio > 60:
+    st.markdown("<div class='info-box'>Balanced Spending! Ab saving 20%+ karne ki koshish karo.</div>", unsafe_allow_html=True)
 else:
-    st.markdown("<div class='header-glow'>Interactive Visualizations</div>", unsafe_allow_html=True)
-    st.markdown("<div class='header-sub'>Charts to help you understand income, expenses and trend</div>", unsafe_allow_html=True)
+    st.markdown("<div class='success-box'>Excellent Control! Aap bohot smartly manage kar rahe ho!</div>", unsafe_allow_html=True)
 
-    data_bar = pd.DataFrame({'Category': ['Income', 'Expenses'], 'Amount': [monthly_income, monthly_expenses]})
-    chart_bar = alt.Chart(data_bar).mark_bar().encode(x='Category', y='Amount', tooltip=['Category', 'Amount']).properties(width=600, height=350, title='Monthly Income vs Expenses')
-    st.altair_chart(chart_bar, use_container_width=True)
+if saving_ratio < 10:
+    st.markdown("<div class='warning-box'>Low Savings! Mahine ka 10% bhi nahi bacha rahe. Pehle saving karo, phir kharch.</div>", unsafe_allow_html=True)
+elif saving_ratio < 20:
+    st.markdown("<div class='info-box'>Good Start! 10-20% saving hai. Ise 30% tak le jao.</div>", unsafe_allow_html=True)
+else:
+    st.markdown("<div class='success-box'>Amazing Saving Habit! Aap future ke liye ready ho!</div>", unsafe_allow_html=True)
 
-    categories = ["Food", "Bills", "Travel", "Shopping", "Health"]
-    vals = [monthly_expenses*0.2, monthly_expenses*0.25, monthly_expenses*0.15, monthly_expenses*0.3, monthly_expenses*0.1]
-    data_pie = pd.DataFrame({'Category': categories, 'Amount': vals})
-    chart_pie = alt.Chart(data_pie).mark_arc().encode(theta='Amount:Q', color='Category:N', tooltip=['Category','Amount']).properties(width=600, height=350, title='Expense Distribution')
-    st.altair_chart(chart_pie, use_container_width=True)
+# Saving Goal
+st.markdown("### Saving Goal")
+if monthly_saving > 0:
+    months = goal_amount / monthly_saving
+    st.markdown(f"<div class='card'>Goal: **{goal_purpose}** — ₨ {goal_amount:,.0f}<br>At current rate: **{months:.0f} months** (~{months/12:.1f} years)</div>", unsafe_allow_html=True)
+    
+    basic = monthly_income * 0.20
+    strong = monthly_income * 0.30
+    if monthly_saving < basic:
+        st.info(f"**Basic Plan (20%)**: Save ₨ {basic:,.0f}/month → {goal_amount/basic:.0f} months")
+    if monthly_saving < strong:
+        st.info(f"**Strong Plan (30%)**: Save ₨ {strong:,.0f}/month → {goal_amount/strong:.0f} months")
+    if monthly_saving >= strong:
+        st.success("Outstanding! Ap already 30%+ bacha rahe hain! Goal jaldi poora hoga!")
+    elif monthly_saving >= basic:
+        st.success("Great Job! Ap Basic Plan achieve kar chuke hain!")
+else:
+    st.error("Aap abhi saving nahi kar rahe — Goal kabhi achieve nahi hoga!")
 
-    data_trend = pd.DataFrame({
-        'Month': ['Now','1 Month','2 Months','3 Months'],
-        'Savings': [current_savings, current_savings + fin['monthly_saving'], current_savings + fin['monthly_saving']*2, current_savings + fin['monthly_saving']*3]
-    })
-    chart_line = alt.Chart(data_trend).mark_line(point=True).encode(x='Month', y='Savings').properties(width=800, height=350, title='Savings Trend (Projection)')
-    st.altair_chart(chart_line, use_container_width=True)
+# Emergency Fund
+st.markdown("### Emergency Fund")
+st.write(f"Needed (6 months expenses): ₨ {emergency_needed:,.0f}")
+st.progress(emergency_progress)
+if emergency_progress >= 1:
+    st.success("Complete! Aap fully protected hain.")
+elif emergency_progress >= 0.7:
+    st.info("Almost there! Thodi aur saving karo.")
+else:
+    st.warning("Emergency fund kam hai — mahine ka 10-20% add karo.")
 
-# ---------- Generate PDF Report ----------
-if st.session_state.get('report_click'):
-    try:
-        pdf_buffer = io.BytesIO()
-        doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
-        styles = getSampleStyleSheet()
-        story = []
-        story.append(Paragraph("Personal AI Finance Manager — Quick Report", styles['Title']))
-        story.append(Spacer(1, 0.15*inch))
-        story.append(Paragraph(f"Date: {datetime.now().strftime('%Y-%m-%d')}", styles['Normal']))
-        story.append(Paragraph(f"Income: {monthly_income:,.2f} PKR | Expenses: {monthly_expenses:,.2f} PKR", styles['Normal']))
-        story.append(Paragraph(f"Net Worth: {fin['net_worth']:,.2f} PKR", styles['Normal']))
-        story.append(Paragraph(f"Savings Ratio: {fin['saving_rate']:.2f}% | Expense Ratio: {fin['expense_rate']:.2f}%", styles['Normal']))
-        story.append(Paragraph(f"Goal: {goal_purpose} — {goal_amount:,.2f} PKR", styles['Normal']))
-        story.append(Paragraph("\nRecommendations:", styles['Heading3']))
-        story.append(Paragraph("1. Automate savings. 2. Build emergency fund to 6 months. 3. Start conservative investments if you have <20% savings rate.", styles['Normal']))
-        doc.build(story)
-        pdf_buffer.seek(0)
-        st.download_button("Download Full Report", pdf_buffer, file_name="finance_quick_report.pdf", mime="application/pdf")
-    except Exception as e:
-        st.error(f"Failed to build PDF report: {e}")
-    finally:
-        st.session_state['report_click'] = False
+# Investment Recommendation
+st.markdown("### Investment Recommendation")
+if saving_ratio > 30:
+    st.success("**Aggressive**: 80% Stocks, 20% Gold/Funds — High growth")
+elif saving_ratio > 15:
+    st.info("**Balanced**: 60% Stocks, 30% Debt, 10% Gold — Steady growth")
+else:
+    st.warning("**Conservative**: Pehle emergency fund banao, phir low-risk se shuru karo")
 
-# End of file
+# 50/30/20 Rule (Only if needed)
+if expense_ratio > 70 or saving_ratio < 20:
+    st.markdown("### 50/30/20 Budget Rule")
+    needs = monthly_income * 0.5
+    wants = monthly_income * 0.3
+    save = monthly_income * 0.2
+    st.write(f"Needs (50%): ₨ {needs:,.0f} | Wants (30%): ₨ {wants:,.0f} | Savings (20%): ₨ {save:,.0f}")
+    st.info("Yeh rule follow karo for financial freedom.")
+
+# PDF Report
+def create_pdf():
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    styles = getSampleStyleSheet()
+    story = []
+    story.append(Paragraph("PakFinance AI Report", styles['Title']))
+    story.append(Spacer(1, 0.2*inch))
+    story.append(Paragraph(f"Date: {datetime.now().strftime('%d %B %Y')}", styles['Normal']))
+    story.append(Paragraph(f"Monthly Income: ₨ {monthly_income:,.0f}", styles['Normal']))
+    story.append(Paragraph(f"Monthly Saving: ₨ {monthly_saving:,.0f} ({saving_ratio:.1f}%)", styles['Normal']))
+    story.append(Paragraph(f"Net Worth: ₨ {net_worth:,.0f}", styles['Normal']))
+    story.append(Paragraph(f"Goal: {goal_purpose} — ₨ {goal_amount:,.0f}", styles['Normal']))
+    story.append(Paragraph("Keep up the great work!", styles['Normal']))
+    doc.build(story)
+    buffer.seek(0)
+    return buffer
+
+if st.button("Download PDF Report"):
+    pdf = create_pdf()
+    st.download_button("Download Now", pdf, "PakFinance_Report.pdf", "application/pdf")
+
+st.markdown("<br><center>Made with Pakistan for Pakistanis by Grok</center>", unsafe_allow_html=True)
