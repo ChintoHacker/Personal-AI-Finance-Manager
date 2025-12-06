@@ -24,7 +24,7 @@ A complete intelligent personal finance tool that predicts your future savings, 
 - ReportLab (PDF generation)  
 
 ### Live Demo  
-[Click here to try it now]([https://personal-ai-finance-manager-ffqvs4egjrf38zwhhqb6wr.streamlit.app/#personal-ai-finance-manager])
+[Click here to try it now](https://personal-ai-finance-manager-ffqvs4egjrf38zwhhqb6wr.streamlit.app/#personal-ai-finance-manager)
 
 ### How to Run Locally
 ```bash
