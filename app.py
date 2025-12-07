@@ -431,7 +431,7 @@ elif st.session_state["page"] == "insights":
 
 
 # ---------------- PAGE: VISUALS ----------------
-# --------------------- VISUALS PAGE (STYLISH + GLASS + MODERN) ---------------------
+# --------------------- VISUALS PAGE WITH CHARTS + ANIMATIONS ---------------------
 elif st.session_state["page"] == "visuals":
 
     st.markdown("""
@@ -440,69 +440,129 @@ elif st.session_state["page"] == "visuals":
             Your spending & savings — visualized beautifully
         </p>
         <br>
+
+        <style>
+            @keyframes fadeIn {
+                from {opacity: 0; transform: translateY(20px);}
+                to {opacity: 1; transform: translateY(0);}
+            }
+            .fade-card {
+                animation: fadeIn 0.9s ease forwards;
+            }
+        </style>
     """, unsafe_allow_html=True)
 
-    # --------- CARD STYLE (used for all 3 blocks) ---------
-    card_style = """
-        background: rgba(255,255,255,0.06);
-        padding: 22px;
-        border-radius: 18px;
-        border: 1px solid rgba(255,255,255,0.10);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.35);
-        width: 100%;
-        text-align: center;
-        transition: 0.3s;
-    """
+    import pandas as pd
+    import numpy as np
 
-    hover_style = """
-        this.style.transform='scale(1.03)';
-        this.style.boxShadow='0 12px 35px rgba(0,0,0,0.55)';
-    """
+    # Fake demo categories for visualization (safe & optional)
+    categories = ["Food", "Transport", "Bills", "Shopping", "Other"]
+    spending_values = [
+        monthly_expenses * 0.25,
+        monthly_expenses * 0.15,
+        monthly_expenses * 0.30,
+        monthly_expenses * 0.20,
+        monthly_expenses * 0.10,
+    ]
 
-    unhover_style = """
-        this.style.transform='scale(1)';
-        this.style.boxShadow='0 8px 25px rgba(0,0,0,0.35)';
-    """
+    df_spending = pd.DataFrame({
+        "Category": categories,
+        "Amount": spending_values
+    })
 
-    # --------- FIRST ROW (Large visual block) ---------
-    st.markdown(f"""
-        <div style="{card_style}" onmouseover="{hover_style}" onmouseout="{unhover_style}">
+    # Monthly Trend Demo
+    trend_months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
+    df_trend = pd.DataFrame({
+        "Month": trend_months,
+        "Income": [monthly_income * 0.9, monthly_income, monthly_income * 1.1,
+                   monthly_income, monthly_income * 1.05, monthly_income],
+        "Expenses": [monthly_expenses * 1.1, monthly_expenses, monthly_expenses * 0.95,
+                     monthly_expenses * 1.05, monthly_expenses, monthly_expenses * 1.02]
+    })
+
+    # Goal Progress
+    goal_completion = goal_progress / 100
+
+    # -------- FIRST CARD (Pie Chart) --------
+    st.markdown("<div class='fade-card'>", unsafe_allow_html=True)
+
+    st.markdown("""
+        <div style="
+            background: rgba(255,255,255,0.07);
+            padding: 22px;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.10);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+            text-align: center;
+        ">
             <h3 style='color:white; margin-top:0;'>Spending Breakdown</h3>
-            <p style='color:#bcd7ff; margin-top:-5px;'>Categorized view of where your money goes</p>
-            <div style='height:260px; display:flex; justify-content:center; align-items:center;'>
-                <span style='color:#ffffff70;'>Your chart will appear here</span>
-            </div>
+            <p style='color:#bcd7ff; margin-top:-5px;'>Where your money goes</p>
         </div>
-        <br><br>
     """, unsafe_allow_html=True)
 
-    # --------- SECOND ROW (Two visuals side-by-side) ---------
+    st.pyplot(df_spending.set_index("Category").plot.pie(y="Amount", autopct='%1.1f%%').figure)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<br><br>", unsafe_allow_html=True)
+
+    # -------- SECOND ROW (Line Chart + Goal Progress) --------
     v1, v2 = st.columns(2)
 
-    v1.markdown(f"""
-        <div style="{card_style}" onmouseover="{hover_style}" onmouseout="{unhover_style}">
-            <h3 style='color:white; margin-top:0;'>Monthly Trend</h3>
-            <p style='color:#bcd7ff; margin-top:-5px;'>Income vs Expenses Over Time</p>
-            <div style='height:230px; display:flex; justify-content:center; align-items:center;'>
-                <span style='color:#ffffff70;'>Chart Placeholder</span>
+    # Monthly Trend Line Chart
+    with v1:
+        st.markdown("<div class='fade-card'>", unsafe_allow_html=True)
+        st.markdown("""
+            <div style="
+                background: rgba(255,255,255,0.07);
+                padding: 22px;
+                border-radius: 18px;
+                border: 1px solid rgba(255,255,255,0.10);
+                backdrop-filter: blur(10px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+                text-align: center;
+            ">
+                <h3 style='color:white;'>Monthly Trend</h3>
+                <p style='color:#bcd7ff; margin-top:-5px;'>Income vs Expenses</p>
             </div>
-        </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-    v2.markdown(f"""
-        <div style="{card_style}" onmouseover="{hover_style}" onmouseout="{unhover_style}">
-            <h3 style='color:white; margin-top:0;'>Goal Progress</h3>
-            <p style='color:#bcd7ff; margin-top:-5px;'>Your journey toward savings goals</p>
-            <div style='height:230px; display:flex; justify-content:center; align-items:center;'>
-                <span style='color:#ffffff70;'>Chart Placeholder</span>
+        st.line_chart(df_trend.set_index("Month"))
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # Goal Progress Visual
+    with v2:
+        st.markdown("<div class='fade-card'>", unsafe_allow_html=True)
+        st.markdown("""
+            <div style="
+                background: rgba(255,255,255,0.07);
+                padding: 22px;
+                border-radius: 18px;
+                border: 1px solid rgba(255,255,255,0.10);
+                backdrop-filter: blur(10px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+                text-align: center;
+            ">
+                <h3 style='color:white;'>Goal Progress</h3>
+                <p style='color:#bcd7ff; margin-top:-5px;'>Your savings target</p>
             </div>
-        </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+
+        st.progress(goal_completion)
+
+        st.markdown(f"""
+            <div style='color:white; font-size:22px; text-align:center; margin-top:10px;'>
+                {goal_progress:.0f}% Complete
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br><br>", unsafe_allow_html=True)
 
 
+
 # ========================= END =========================
+
 
 
