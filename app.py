@@ -1,3 +1,4 @@
+```python
 import streamlit as st
 import plotly.graph_objects as go
 import plotly.express as px
@@ -61,66 +62,86 @@ p, div, span, label {
 
 /* ---------- CARDS ---------- */
 .stat-card {
-    background: #7E7E96;
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,0.18);
-    padding:14px;
+    background: rgba(126,126,150,0.85);
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.28);
+    padding:16px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.25);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: scale(1.02);
 }
 
 .stat-label {
-    font-size:14px;
+    font-size:15px;
     color:#E2E8F0 !important;
+    margin-bottom:4px;
 }
 
 .stat-value {
-    font-size:22px;
-    font-weight:800;
+    font-size:24px;
+    font-weight:900;
     color:#FFFFFF !important;
 }
 
 /* ---------- GOAL BAR ---------- */
 .goal-wrap {
-    background: rgba(255,255,255,0.1);
-    border-radius:12px;
-    padding:12px;
-    border:1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.15);
+    border-radius:16px;
+    padding:16px;
+    border:1px solid rgba(255,255,255,0.25);
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
 }
 
 .goal-bar {
-    height:20px;
-    background: rgba(255,255,255,0.15);
-    border-radius:12px;
+    height:24px;
+    background: rgba(255,255,255,0.2);
+    border-radius:16px;
+    overflow:hidden;
 }
 
 .goal-fill {
     background: linear-gradient(90deg,#06b6d4,#7c3aed);
+    height:100%;
+    border-radius:16px 0 0 16px;
 }
 
 /* ---------- TILES ---------- */
 .tile {
-    padding:12px;
-    border-radius:10px;
-    background: rgba(255,255,255,0.12);
-    border:1px solid rgba(255,255,255,0.22);
+    padding:14px;
+    border-radius:12px;
+    background: rgba(255,255,255,0.15);
+    border:1px solid rgba(255,255,255,0.28);
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+
+.tile:hover {
+    transform: scale(1.02);
 }
 
 .tile-title {
-    font-size:15px;
+    font-size:16px;
     font-weight:800;
     color:white !important;
+    margin-bottom:4px;
 }
 
 .tile-sub {
-    font-size:13px;
+    font-size:14px;
     color:#E2E8F0 !important;
 }
 
 .tile-warn {
-    border-left:4px solid #fb7185;
+    border-left:5px solid #fb7185;
+    background: rgba(251,113,133,0.1);
 }
 
 .tile-good {
-    border-left:4px solid #10b981;
+    border-left:5px solid #10b981;
+    background: rgba(16,185,129,0.1);
 }
 
 /* ---------------------- SIDEBAR FINAL PERFECT VERSION ---------------------- */
@@ -166,7 +187,45 @@ p, div, span, label {
     padding: 12px !important;
 }
 
+/* ---------- NAV BUTTONS ---------- */
+.nav-button > button {
+    background: linear-gradient(90deg,#0ea5e9,#6366f1) !important;
+    color:white !important;
+    font-weight:700 !important;
+    border-radius:50px;
+    padding:10px 20px;
+    border:none;
+    box-shadow:0 4px 16px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+}
 
+.nav-button > button:hover {
+    transform: translateY(-2px);
+    box-shadow:0 8px 24px rgba(0,0,0,0.4);
+}
+
+/* ---------- DATE DISPLAY ---------- */
+.date-display {
+    float:right;
+    background: rgba(255,255,255,0.15);
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:14px;
+    color:#FFFFFF !important;
+    border:1px solid rgba(255,255,255,0.25);
+    box-shadow:0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* ---------- TIP BOX ---------- */
+.tip-box {
+    background: rgba(255,255,255,0.12);
+    border-radius:12px;
+    padding:12px;
+    border:1px solid rgba(255,255,255,0.22);
+    font-size:14px;
+    color:#E2E8F0 !important;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
 
 
 </style>
@@ -282,20 +341,28 @@ analysis_tiles = generate_tiles() if st.session_state.get('analysis_run', False)
 st.markdown(f"""
     <div class="top-header">
       <span class="app-title">Your Personal Financial Advisor — Smart</span>
-      <span style="float:right; color:rgba(230,238,248,0.7); font-size:13px;">{datetime.now().strftime('%d %b %Y')}</span>
+      <span class="date-display">📅 {datetime.now().strftime('%d %b %Y')}</span>
     </div>
 """, unsafe_allow_html=True)
 
-nav1, nav2, nav3 = st.columns([1,1,1], gap="large")
+st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)  # Slight space below header
+
+nav1, nav2, nav3 = st.columns([1,1,1], gap="medium")
 with nav1:
+    st.markdown("<div class='nav-button'>", unsafe_allow_html=True)
     if st.button("🏠 Overview"):
         st.session_state['page'] = 'landing'
+    st.markdown("</div>", unsafe_allow_html=True)
 with nav2:
+    st.markdown("<div class='nav-button'>", unsafe_allow_html=True)
     if st.button("🤖 AI Insights"):
         st.session_state['page'] = 'insights'
+    st.markdown("</div>", unsafe_allow_html=True)
 with nav3:
+    st.markdown("<div class='nav-button'>", unsafe_allow_html=True)
     if st.button("📈 Visuals"):
         st.session_state['page'] = 'visuals'
+    st.markdown("</div>", unsafe_allow_html=True)
 if 'page' not in st.session_state:
     st.session_state['page'] = 'landing'
 
@@ -319,104 +386,83 @@ if st.session_state.get('page') == 'landing':
             st.markdown(f"<div class='stat-card'><div class='stat-label'>{label}</div><div class='stat-value'>Rs {val:,.0f}</div></div>", unsafe_allow_html=True)
 
     st.markdown("---")
-    # Goal progress + condition-based suggestions (two short suggestions per state)
-    left, right = st.columns([2,1], gap="large")
-    with left:
-        st.markdown("<h4>Goal Progress</h4>", unsafe_allow_html=True)
-        st.markdown(
-            f"""
-            <div class="goal-wrap">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="width:68%;">
-                  <div style="margin-bottom:8px;"><strong>{goal_name}</strong> — Target Rs {goal_amount:,.0f}</div>
-                  <div class="goal-bar"><div class="goal-fill" style="width:{goal_progress_pct:.1f}%;"></div></div>
-                  <div class="muted" style="margin-top:8px;">{goal_progress_pct:.1f}% complete • Rs {current_savings:,.0f} used for goal</div>
-                </div>
-                <div style="width:28%; text-align:center;">
-                  <div style="font-size:13px; color:rgba(230,238,248,0.7)"><strong>ETA</strong></div>
-                  <div style="font-size:20px; font-weight:800; margin-top:6px;">{months_to_goal if months_to_goal != math.inf else 'N/A'} mo</div>
-                  <div class="muted" style="margin-top:6px;">(if monthly savings allocated)</div>
-                </div>
-              </div>
+    # Goal progress (full width now)
+    st.markdown("<h4>Goal Progress</h4>", unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div class="goal-wrap">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="width:68%;">
+              <div style="margin-bottom:8px;"><strong>{goal_name}</strong> — Target Rs {goal_amount:,.0f}</div>
+              <div class="goal-bar"><div class="goal-fill" style="width:{goal_progress_pct:.1f}%;"></div></div>
+              <div class="muted" style="margin-top:8px;">{goal_progress_pct:.1f}% complete • Rs {current_savings:,.0f} used for goal</div>
             </div>
-            """, unsafe_allow_html=True)
+            <div style="width:28%; text-align:center;">
+              <div style="font-size:13px; color:rgba(230,238,248,0.7)"><strong>ETA</strong></div>
+              <div style="font-size:20px; font-weight:800;">{months_to_goal if months_to_goal != math.inf else 'N/A'} mo</div>
+              <div style="font-size:13px; color:rgba(230,238,248,0.7)">(if monthly savings allocated)</div>
+            </div>
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-        st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
-
-        # Condition-based 2 suggestions (short, stylish)
-        st.markdown("<h4 style='margin-bottom:6px'>Recommended Actions</h4>", unsafe_allow_html=True)
-        suggestions = []
-        if goal_progress_pct < 50:
-            # compute numbers for suggestion
-            # Suggest 1: increase monthly allocation by 20% of monthly_possible_save if possible
-            suggested_extra = 0
-            if monthly_possible_save > 0:
-                suggested_extra = round(monthly_possible_save * 0.2)
-            suggestions = [
-                {"icon":"💡", "title":"Increase Monthly Allocation", "sub": f"Add ~Rs {suggested_extra:,}/mo to goal"},
-                {"icon":"✂️", "title":"Cut Discretionary Spend", "sub": f"Reduce non-essential spend by ~Rs {max(5000, round(monthly_expenses*0.05)):,}/mo"}
-            ]
-        elif 50 <= goal_progress_pct < 90:
-            suggested_extra = 0
-            if monthly_possible_save > 0:
-                suggested_extra = round(monthly_possible_save * 0.1)
-            suggestions = [
-                {"icon":"⚡", "title":"Boost Pace Slightly", "sub": f"Add ~Rs {suggested_extra:,}/mo to finish earlier"},
-                {"icon":"🔁", "title":"Automate Transfers", "sub": "Set a fixed monthly transfer to your goal"}
-            ]
-        else:
-            suggestions = [
-                {"icon":"🎉", "title":"Almost There", "sub": "Great job — keep momentum"},
-                {"icon":"📆", "title":"Plan Next", "sub": "Consider your next financial goal"}
-            ]
-
-        # Render two suggestion tiles side-by-side
-        cols = st.columns(2)
-        for col, s in zip(cols, suggestions):
+    st.markdown("---")
+    # Moved Quick Insights below Goal
+    st.markdown("<h4>Quick Insights</h4>", unsafe_allow_html=True)
+    if analysis_tiles:
+        cols = st.columns(min(len(analysis_tiles), 4))
+        for col, t in zip(cols, analysis_tiles):
             with col:
-                extra = ""
-                if "Increase" in s['title'] or "Cut" in s['title']:
-                    extra = "tile-warn"
-                elif "Almost" in s['title'] or "Boost" in s['title'] or "Automate" in s['title']:
-                    extra = "tile-good"
+                cls = "tile-warn" if "Low" in t['title'] or "Negative" in t['title'] or "Behind" in t['title'] else "tile-good"
                 st.markdown(f"""
-                    <div class="tile {extra}">
-                      <div class="tile-icon">{s['icon']}</div>
+                    <div class="tile {cls}">
+                      <div class="tile-icon">{t['icon']}</div>
                       <div>
-                        <div class="tile-title">{s['title']}</div>
-                        <div class="tile-sub">{s['sub']}</div>
+                        <div class="tile-title">{t['title']}</div>
+                        <div class="tile-sub">{t['sub']}</div>
                       </div>
                     </div>
                 """, unsafe_allow_html=True)
-
-    with right:
-        # Compact quick insights (row-wise) — fewer words
-        st.markdown("<h4>Quick Insights</h4>", unsafe_allow_html=True)
-        # Use analysis_tiles if user ran analyze, else live compute
-        quick = analysis_tiles if analysis_tiles is not None else generate_tiles()
-        # Show in rows of 2
-        rows = [quick[i:i+2] for i in range(0, len(quick), 2)]
-        for row in rows:
-            cols = st.columns(len(row))
-            for col, t in zip(cols, row):
-                with col:
-                    cls = ""
-                    if "Low" in t['title'] or "Negative" in t['title']:
-                        cls = "tile-warn"
-                    elif "Good" in t['title'] or "OK" in t['title'] or "Strong" in t['title']:
-                        cls = "tile-good"
-                    st.markdown(f"""
-                        <div class="tile {cls}">
-                          <div class="tile-icon">{t['icon']}</div>
-                          <div>
-                            <div class="tile-title">{t['title']}</div>
-                            <div class="tile-sub">{t['sub']}</div>
-                          </div>
-                        </div>
-                    """, unsafe_allow_html=True)
+    else:
+        st.markdown("<div class='muted'>Click Analyze in sidebar to see insights.</div>", unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("<div class='muted'>Tip: Click Analyze in sidebar after changing inputs to update recommendations.</div>", unsafe_allow_html=True)
+    # Improved Recommended Actions
+    st.markdown("<h4>Recommended Actions</h4>", unsafe_allow_html=True)
+    if goal_progress_pct < 50:
+        suggested_extra = round(monthly_possible_save * 0.2) if monthly_possible_save > 0 else 0
+        actions = [
+            {"icon":"💡","title":"Increase Monthly Allocation","sub":f"Add ~Rs {suggested_extra:,}/mo to goal"},
+            {"icon":"✂️","title":"Cut Discretionary Spend","sub":f"Reduce non-essential spend by ~Rs {max(5000, round(monthly_expenses*0.05)):,}/mo"}
+        ]
+    elif 50 <= goal_progress_pct < 90:
+        suggested_extra = round(monthly_possible_save * 0.1) if monthly_possible_save > 0 else 0
+        actions = [
+            {"icon":"🚀","title":"Boost Allocation","sub":f"Add ~Rs {suggested_extra:,}/mo to finish earlier"},
+            {"icon":"🤖","title":"Automate Savings","sub":"Set up auto-transfers to goal account"}
+        ]
+    else:
+        actions = [
+            {"icon":"✅","title":"Maintain Plan","sub":"Continue your current saving strategy"},
+            {"icon":"📅","title":"Plan Next Goal","sub":"Start thinking about your next financial milestone"}
+        ]
+
+    act_cols = st.columns(2)
+    for col, act in zip(act_cols, actions):
+        with col:
+            cls = "tile-good" if "Maintain" in act['title'] or "Boost" in act['title'] else "tile-warn"
+            st.markdown(f"""
+                <div class="tile {cls}">
+                  <div class="tile-icon">{act['icon']}</div>
+                  <div>
+                    <div class="tile-title">{act['title']}</div>
+                    <div class="tile-sub">{act['sub']}</div>
+                  </div>
+                </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown("<div class='tip-box'>💡 Tip: Click Analyze in sidebar after changing inputs to update recommendations.</div>", unsafe_allow_html=True)
 
 # ------------------------------
 # PAGE: AI Insights (Emergency Fund visuals)
@@ -678,15 +724,4 @@ except Exception as e:
     st.download_button("Download summary (txt)", data=summary_text, file_name="summary.txt")
 
 st.markdown("<div class='muted' style='margin-top:8px'>Report includes summary, goal progress, emergency info & short suggestions.</div>", unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
-
-
+```
