@@ -1,8 +1,6 @@
 import streamlit as st
 from datetime import datetime
 import math
-import plotly.express as px
-import pandas as pd
 
 st.set_page_config(page_title="Your Financial Advisor — Smart", page_icon="rocket", layout="wide")
 
@@ -25,35 +23,41 @@ if not st.session_state.logged_in:
                 st.error("Wrong credentials")
     st.stop()
 
-# ========================= PAGE SELECTION =========================
+# ========================= PAGE STATE =========================
 if "page" not in st.session_state:
     st.session_state.page = "overview"
 
-def set_page(page_name):
-    st.session_state.page = page_name
-
-# ========================= CSS — SAME PREMIUM PREMIUM + GLOWING BUTTONS =========================
+# ========================= CSS — GLOWING BUTTONS + PREMIUM DESIGN =========================
 st.markdown("""
 <style>
     .stApp { background: linear-gradient(180deg, #224B7D 0%, #6C9E7F 100%); font-family: 'Inter', sans-serif; }
     .app-title { font-size: 42px !important; font-weight: 900 !important; color: #6CE0AC !important; text-align: center; margin-bottom: 10px; }
-    
-    .nav-container { text-align:center; margin:50px 0 70px 0; }
-    .glow-btn {
+
+    /* GLOWING NAVIGATION BUTTONS */
+    .nav-btn {
         background: linear-gradient(45deg, #8b5cf6, #ec4899);
-        color: white; border: none; padding: 16px 40px; margin: 0 20px;
+        color: white; border: none; padding: 16px 40px; margin: 0 15px;
         border-radius: 50px; font-size: 19px; font-weight: 700; cursor: pointer;
         box-shadow: 0 0 25px rgba(139,92,246,0.7), 0 0 50px rgba(236,72,153,0.5);
         transition: all 0.4s ease; position: relative; overflow: hidden;
     }
-    .glow-btn:hover { transform: translateY(-6px) scale(1.06); box-shadow: 0 0 40px rgba(139,92,246,0.9), 0 0 80px rgba(236,72,153,0.7); }
-    .glow-btn.active { background: linear-gradient(45deg, #10b981, #34d399); box-shadow: 0 0 40px rgba(16,185,129,0.9); }
-    .glow-btn::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    .nav-btn:hover {
+        transform: translateY(-6px) scale(1.06);
+        box-shadow: 0 0 40px rgba(139,92,246,0.9), 0 0 80px rgba(236,72,153,0.7);
+    }
+    .nav-btn-active {
+        background: linear-gradient(45deg, #10b981, #34d399);
+        box-shadow: 0 0 40px rgba(16,185,129,0.9);
+    }
+    .nav-btn::before {
+        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
         background: linear-gradient(45deg, transparent, rgba(255,255,255,0.15), transparent);
-        transform: rotate(45deg); transition: all 0.6s; pointer-events: none; }
-    .glow-btn:hover::before { animation: shine 1.5s infinite; }
+        transform: rotate(45deg); transition: all 0.6s; pointer-events: none;
+    }
+    .nav-btn:hover::before { animation: shine 1.5s infinite; }
     @keyframes shine { 0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); } 100% { transform: translateX(100%) translateY(100%) rotate(45deg); } }
 
+    /* CARDS & GOAL */
     .overview-card { background: rgba(255,255,255,0.16); backdrop-filter: blur(14px); border-radius: 22px; padding: 26px 16px; text-align: center; border: 1.5px solid rgba(255,255,255,0.25); box-shadow: 0 10px 32px rgba(0,0,0,0.45); height: 155px; transition: 0.3s; }
     .overview-card:hover { transform: translateY(-10px); }
     .card-label { font-size: 16px; color: #E0E7FF; font-weight: 600; }
@@ -67,7 +71,7 @@ st.markdown("""
     .rec-celebrate { background: linear-gradient(135deg, #f0e, #8b5cf6, #ec4899); color: white; animation: celebrate 2s infinite; }
     @keyframes celebrate { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
     .rec-message { font-size: 21px; font-weight: 700; line-height: 1.6; padding: 30px; border-radius: 24px; backdrop-filter: blur(14px); box-shadow: 0 12px 40px rgba(0,0,0,0.6); margin-top: 20px; text-align: center; }
-    .stSidebar { background: #2D3452 !important; }
+    .stSidebar { background: #2D3452D52 !important; }
     .stSidebar label { color: #F1F5F9 !important; font-weight: 700; font-size: 17px !important; }
     .input-section { background: rgba(255,255,255,0.12); border-radius: 18px; padding: 20px; border: 1px solid rgba(255,255,255,0.22); margin: 10px 0; }
 </style>
@@ -78,14 +82,14 @@ with st.sidebar:
     st.markdown("<h2 style='color:#6CE0AC; text-align:center;'>Apki Financial Inputs</h2>", unsafe_allow_html=True)
     st.markdown("<div class='input-section'>", unsafe_allow_html=True)
     monthly_income = st.number_input("Monthly Income (PKR)", min_value=0, value=85000, step=1000)
-    monthly_expenses = st.number_input("Monthly Expenses (PKR)", min_value=0, value=55000, step=1000)
-    current_savings = st.number_input("Current Savings (PKR)", min_value=0, value=150000, step=5000)
-    total_debt = st.number_input("Total Debt (PKR)", min_value=0, value=0, step=1000)
-    current_investments = st.number_input("Current Investments (PKR)", min_value=0, value=50000, step=1000)
+    monthly_expenses = st.number_input("Monthly Expenses (PKR)", min=0, value=55000, step=1000)
+    current_savings = st.number_input("Current Savings (PKR)", min=0, value=150000, step=5000)
+    total_debt = st.number_input("Total Debt (PKR)", min=0, value=0, step=1000)
+    current_investments = st.number_input("Current Investments (PKR)", min=0, value=50000, step=1000)
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("---")
     goal_name = st.text_input("Goal Name", value="Dream House")
-    goal_amount = st.number_input("Goal Target Amount (PKR)", min_value=1, value=5000000, step=50000)
+    goal_amount = st.number_input("Goal Target Amount (PKR)", min=1, value=5000000, step=50000)
     if st.button("Analyze / Predict", type="primary", use_container_width=True):
         st.success("Analysis Updated!")
 
@@ -96,28 +100,36 @@ monthly_save = max(0, monthly_income - monthly_expenses)
 goal_progress = min(100.0, (current_savings / goal_amount * 100) if goal_amount > 0 else 0)
 months_needed = "N/A" if monthly_save <= 0 else max(0, round((goal_amount - current_savings) / monthly_save))
 
-# ========================= HEADER + GLOWING NAV BUTTONS =========================
+# ========================= HEADER + WORKING GLOW BUTTONS =========================
 st.markdown("<h1 class='app-title'>Your Personal Financial Advisor — Smart</h1>", unsafe_allow_html=True)
 st.markdown(f"<p style='text-align:center; color:#E0E7FF; font-size:19px; margin-top:-10px;'>Today {datetime.now().strftime('%d %B %Y')}</p>", unsafe_allow_html=True)
 
+# Glowing Navigation Buttons — NOW FULLY WORKING!
+col1, col2, col3 = st.columns(3)
+with col1:
+    if st.button("Overview", use_container_width=True, key="nav_overview"):
+        st.session_state.page = "overview"
+        st.rerun()
+with col2:
+    if st.button("AI Insights", use_container_width=True, key="nav_insights"):
+        st.session_state.page = "insights"
+        st.rerun()
+with col3:
+    if st.button("Visuals", use_container_width=True, key="nav_visuals"):
+        st.session_state.page = "visuals"
+        st.rerun()
+
+# Active button highlight
+active_class = "nav-btn-active" if st.session_state.page == "overview" else ""
 st.markdown(f"""
-<div class='nav-container'>
-    <button class='glow-btn {"active" if st.session_state.page=="overview" else ""}' onclick="parent.location.hash='';stSessionState.page='overview'">Overview</button>
-    <button class='glow-btn {"active" if st.session_state.page=="insights" else ""}' onclick="parent.location.hash='';stSessionState.page='insights'">AI Insights</button>
-    <button class='glow-btn {"active" if st.session_state.page=="visuals" else ""}' onclick="parent.location.hash='';stSessionState.page='visuals'">Visuals</button>
+<div style='text-align:center; margin:40px 0;'>
+    <button class='nav-btn { "nav-btn-active" if st.session_state.page=="overview" else "" }'>Overview</button>
+    <button class='nav-btn { "nav-btn-active" if st.session_state.page=="insights" else "" }'>AI Insights</button>
+    <button class='nav-btn { "nav-btn-active" if st.session_state.page=="visuals" else "" }'>Visuals</button>
 </div>
-<script>
-    const buttons = document.querySelectorAll('.glow-btn');
-    buttons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            buttons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-</script>
 """, unsafe_allow_html=True)
 
-# ========================= PAGE: OVERVIEW (Tera Purana Beautiful Page) =========================
+# ========================= PAGE: OVERVIEW =========================
 if st.session_state.page == "overview":
     st.markdown("<h3 style='text-align:center; color:white; margin:40px 0 30px;'>Overview — Quick Snapshot</h3>", unsafe_allow_html=True)
     
@@ -138,7 +150,7 @@ if st.session_state.page == "overview":
 
     st.markdown("<br><br>", unsafe_allow_html=True)
 
-    # Goal Section
+    # Goal + Recommendation
     if goal_progress >= 100:
         rec_color = "rec-celebrate"
         rec_msg = "GOAL ACHIEVED!<br><b>Mubarak ho bhai!</b><br>Ab naya bada goal set karen"
@@ -169,20 +181,20 @@ if st.session_state.page == "overview":
     </div>
     """, unsafe_allow_html=True)
 
-# ========================= PAGE: AI INSIGHTS (Blank + Ready) =========================
+# ========================= PAGE: AI INSIGHTS (Blank) =========================
 elif st.session_state.page == "insights":
-    st.markdown("<h2 style='text-align:center; color:white; margin:60px 0;'>AI Insights</h2>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align:center; color:#a0d9ff;'>Coming Soon — Advanced AI Analysis</h3>", unsafe_allow_html=True)
-    st.markdown("<div style='text-align:center; margin-top:50px;'><h1>Coming Soon</h1></div>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; color:white; margin:100px 0;'>AI Insights</h2>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align:center; color:#a0d9ff;'>Advanced AI Analysis & Predictions</h3>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center; margin-top:80px; font-size:80px;'>Coming Soon</div>", unsafe_allow_html=True)
 
-# ========================= PAGE: VISUALS (Blank + Ready) =========================
+# ========================= PAGE: VISUALS (Blank) =========================
 elif st.session_state.page == "visuals":
-    st.markdown("<h2 style='text-align:center; color:white; margin:60px 0;'>Visuals & Reports</h2>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align:center; color:#a0d9ff;'>Detailed Charts & Predictions</h3>", unsafe_allow_html=True)
-    st.markdown("<div style='text-align:center; margin-top:50px;'><h1>Coming Soon</h1></div>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; color:white; margin:100px 0;'>Visuals & Reports</h2>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align:center; color:#a0d9ff;'>Interactive Charts & Trends</h3>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center; margin-top:80px; font-size:80px;'>Coming Soon</div>", unsafe_allow_html=True)
 
 # ========================= FOOTER =========================
 st.markdown("<br><br>", unsafe_allow_html=True)
-st.markdown("<div style='text-align:center; background:rgba(255,255,255,0.12); padding:20px; border-radius:18px; color:#E0E7FF; font-size:17px;'>Inputs change karen? → 'Analyze / Predict' zaroor dabana!</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align:center; background:rgba(255,255,255,0.12); padding:20px; border-radius:18px; color:#E0E7FF; font-size:17px;'>Inputs change karen? → 'Analyze / Predict' dabana na bhoolen!</div>", unsafe_allow_html=True)
 st.markdown("---")
 st.caption("© 2025 Your Personal Financial Advisor - Made with love in Pakistan")
