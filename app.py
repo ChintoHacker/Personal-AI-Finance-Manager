@@ -123,40 +123,40 @@ p, div, span, label {
     border-left:4px solid #10b981;
 }
 
-/* ---------- SIDEBAR LABELS BLACK ---------- */
+/* --- SIDEBAR LABELS VISIBLE (BLACK TEXT) --- */
 .stSidebar label,
-.css-1cpxqw2, .css-1a32fsj, .stNumberInput label,
-.sidebar .sidebar-content label {
-    color: #000000 !important;          /* pure black labels */
+.sidebar .sidebar-content label,
+.stSidebar .stNumberInput label {
+    color: #000000 !important;            /* solid black */
     font-weight: 700 !important;
 }
 
-/* ---------- SIDEBAR INPUT BOXES WHITE BG ---------- */
-.stSidebar input[type="number"],
-.stSidebar input[type="text"],
-.stSidebar .stNumberInput input,
-.sidebar .sidebar-content input {
-    background: #FFFFFF !important;     /* white input background */
-    color: #000000 !important;          /* dark text */
+/* --- SIDEBAR INPUT BOXES WHITE BACKGROUND --- */
+.stSidebar input,
+.sidebar .sidebar-content input,
+.stSidebar .stNumberInput input {
+    background: #FFFFFF !important;       /* white input field */
+    color: #000000 !important;            /* black text */
     border: 1px solid #D1D5DB !important;
     border-radius: 8px !important;
     padding: 6px 10px !important;
 }
 
-/* ---------- INPUT BOX HOVER / FOCUS ---------- */
+/* --- INPUT HOVER/FOCUS (OPTIONAL CLEAN LOOK) --- */
 .stSidebar input:focus,
 .sidebar .sidebar-content input:focus {
-    border: 1px solid #3B82F6 !important;   /* blue highlight */
-    box-shadow: 0 0 6px rgba(59, 130, 246, 0.35);
+    border: 1px solid #3B82F6 !important; /* clean blue outline */
+    box-shadow: 0px 0px 6px rgba(59, 130, 246, 0.25);
 }
 
-/* ---------- OPTIONAL: WHITE INPUT SECTION BG ---------- */
+/* --- INPUT SECTION BACKGROUND (ONLY INSIDE BOX) --- */
 .input-section {
-    background: rgba(255, 255, 255, 0.7) !important;
-    border: 1px solid rgba(0,0,0,0.08) !important;
+    background: rgba(255,255,255,0.75) !important;  /* light background */
     border-radius: 10px !important;
-    padding: 12px !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    padding: 10px !important;
 }
+
 
 
 </style>
@@ -670,6 +670,7 @@ except Exception as e:
     st.download_button("Download summary (txt)", data=summary_text, file_name="summary.txt")
 
 st.markdown("<div class='muted' style='margin-top:8px'>Report includes summary, goal progress, emergency info & short suggestions.</div>", unsafe_allow_html=True)
+
 
 
 
