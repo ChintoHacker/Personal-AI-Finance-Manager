@@ -270,7 +270,6 @@ if st.session_state["page"] == "overview":
     st.caption("© 2025 Your Personal Financial Advisor - Made with love in Pakistan")
 
 # ---------------- PAGE: INSIGHTS ----------------
-# --------------------- INSIGHTS PAGE (fixed, user-friendly Version 2) ---------------------
 elif st.session_state["page"] == "insights":
 
     # Page Title
@@ -431,138 +430,132 @@ elif st.session_state["page"] == "insights":
 
 
 # ---------------- PAGE: VISUALS ----------------
-# --------------------- VISUALS PAGE WITH CHARTS + ANIMATIONS ---------------------
+# --------------------- ADVANCED VISUALS PAGE (NEON + A.I. LOOK) ---------------------
 elif st.session_state["page"] == "visuals":
 
-    st.markdown("""
-        <h2 style='text-align:center; color:#6CE0AC; margin-bottom:0;'>Financial Visuals</h2>
-        <p style='text-align:center; color:#dbeafe; margin-top:-8px; font-size:17px;'>
-            Your spending & savings — visualized beautifully
-        </p>
-        <br>
-
-        <style>
-            @keyframes fadeIn {
-                from {opacity: 0; transform: translateY(20px);}
-                to {opacity: 1; transform: translateY(0);}
-            }
-            .fade-card {
-                animation: fadeIn 0.9s ease forwards;
-            }
-        </style>
-    """, unsafe_allow_html=True)
-
+    import plotly.express as px
+    import plotly.graph_objects as go
     import pandas as pd
     import numpy as np
 
-    # Fake demo categories for visualization (safe & optional)
+    st.markdown("<h2 class='neon-title' style='text-align:center;'>Advanced Financial Visuals</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; margin-top:-10px;'>Interactive | Neon Mode | Smooth Animations</p>", unsafe_allow_html=True)
+
+    # ---------- DATA PREP ----------
     categories = ["Food", "Transport", "Bills", "Shopping", "Other"]
-    spending_values = [
+    spending = [
         monthly_expenses * 0.25,
         monthly_expenses * 0.15,
         monthly_expenses * 0.30,
         monthly_expenses * 0.20,
         monthly_expenses * 0.10,
     ]
+    df = pd.DataFrame({"Category": categories, "Amount": spending})
 
-    df_spending = pd.DataFrame({
-        "Category": categories,
-        "Amount": spending_values
-    })
-
-    # Monthly Trend Demo
+    # Monthly trend
     trend_months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
     df_trend = pd.DataFrame({
         "Month": trend_months,
-        "Income": [monthly_income * 0.9, monthly_income, monthly_income * 1.1,
-                   monthly_income, monthly_income * 1.05, monthly_income],
-        "Expenses": [monthly_expenses * 1.1, monthly_expenses, monthly_expenses * 0.95,
-                     monthly_expenses * 1.05, monthly_expenses, monthly_expenses * 1.02]
+        "Income": np.random.randint(monthly_income*0.8, monthly_income*1.1, 6),
+        "Expenses": np.random.randint(monthly_expenses*0.9, monthly_expenses*1.2, 6)
     })
 
-    # Goal Progress
-    goal_completion = goal_progress / 100
+    # Heatmap Data
+    heatmap_data = np.random.randint(2000, 9000, (6, 5))
 
-    # -------- FIRST CARD (Pie Chart) --------
-    st.markdown("<div class='fade-card'>", unsafe_allow_html=True)
+    # ---------- ROW 1: Pie Chart (Animated) ----------
+    fig_pie = px.pie(df, names="Category", values="Amount",
+                     color_discrete_sequence=px.colors.sequential.Purples)
+    fig_pie.update_traces(textinfo="percent+label", pull=0.08)
+    fig_pie.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        font_color='white',
+        legend=dict(orientation="h", y=-0.15)
+    )
 
-    st.markdown("""
-        <div style="
-            background: rgba(255,255,255,0.07);
-            padding: 22px;
-            border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.10);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.35);
-            text-align: center;
-        ">
-            <h3 style='color:white; margin-top:0;'>Spending Breakdown</h3>
-            <p style='color:#bcd7ff; margin-top:-5px;'>Where your money goes</p>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
+    st.subheader("💠 Spending Breakdown")
+    st.plotly_chart(fig_pie, use_container_width=True)
+    st.markdown("</div><br>", unsafe_allow_html=True)
 
-    st.pyplot(df_spending.set_index("Category").plot.pie(y="Amount", autopct='%1.1f%%').figure)
+    # ---------- ROW 2: Line Chart (Animated Smooth Curve) ----------
+    fig_line = go.Figure()
+    fig_line.add_trace(go.Scatter(
+        x=df_trend["Month"],
+        y=df_trend["Income"],
+        mode="lines+markers",
+        name="Income",
+        line=dict(color="#10b981", width=4),
+    ))
+    fig_line.add_trace(go.Scatter(
+        x=df_trend["Month"],
+        y=df_trend["Expenses"],
+        mode="lines+markers",
+        name="Expenses",
+        line=dict(color="#ef4444", width=4),
+    ))
+    fig_line.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(255,255,255,0.05)",
+        font_color="white",
+        xaxis_title=None,
+        yaxis_title=None
+    )
 
+    a, b = st.columns(2)
+
+    with a:
+        st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
+        st.subheader("📊 Monthly Trend")
+        st.plotly_chart(fig_line, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # ---------- ROW 2 (Right): Circular Gauge ----------
+    goal_figure = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=goal_progress,
+        gauge={
+            "axis": {"range": [0, 100]},
+            "bar": {"color": "#8b5cf6"},
+            "bgcolor": "rgba(255,255,255,0.07)",
+            "borderwidth": 2,
+            "bordercolor": "white",
+        },
+        number={'suffix': "%"},
+        domain={"x": [0, 1], "y": [0, 1]}
+    ))
+    goal_figure.update_layout(paper_bgcolor="rgba(0,0,0,0)", font_color="white")
+
+    with b:
+        st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
+        st.subheader("🎯 Goal Completion")
+        st.plotly_chart(goal_figure, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ---------- ROW 3: Spending Heatmap ----------
+    fig_heat = px.imshow(
+        heatmap_data,
+        labels=dict(x="Category", y="Month", color="Rs"),
+        x=categories,
+        y=trend_months,
+        color_continuous_scale="Viridis"
+    )
+    fig_heat.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        font_color="white"
+    )
+
+    st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
+    st.subheader("🔥 Spending Heatmap (6 Months)")
+    st.plotly_chart(fig_heat, use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
-    st.markdown("<br><br>", unsafe_allow_html=True)
-
-    # -------- SECOND ROW (Line Chart + Goal Progress) --------
-    v1, v2 = st.columns(2)
-
-    # Monthly Trend Line Chart
-    with v1:
-        st.markdown("<div class='fade-card'>", unsafe_allow_html=True)
-        st.markdown("""
-            <div style="
-                background: rgba(255,255,255,0.07);
-                padding: 22px;
-                border-radius: 18px;
-                border: 1px solid rgba(255,255,255,0.10);
-                backdrop-filter: blur(10px);
-                box-shadow: 0 8px 25px rgba(0,0,0,0.35);
-                text-align: center;
-            ">
-                <h3 style='color:white;'>Monthly Trend</h3>
-                <p style='color:#bcd7ff; margin-top:-5px;'>Income vs Expenses</p>
-            </div>
-        """, unsafe_allow_html=True)
-
-        st.line_chart(df_trend.set_index("Month"))
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # Goal Progress Visual
-    with v2:
-        st.markdown("<div class='fade-card'>", unsafe_allow_html=True)
-        st.markdown("""
-            <div style="
-                background: rgba(255,255,255,0.07);
-                padding: 22px;
-                border-radius: 18px;
-                border: 1px solid rgba(255,255,255,0.10);
-                backdrop-filter: blur(10px);
-                box-shadow: 0 8px 25px rgba(0,0,0,0.35);
-                text-align: center;
-            ">
-                <h3 style='color:white;'>Goal Progress</h3>
-                <p style='color:#bcd7ff; margin-top:-5px;'>Your savings target</p>
-            </div>
-        """, unsafe_allow_html=True)
-
-        st.progress(goal_completion)
-
-        st.markdown(f"""
-            <div style='color:white; font-size:22px; text-align:center; margin-top:10px;'>
-                {goal_progress:.0f}% Complete
-            </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    st.markdown("<br><br>", unsafe_allow_html=True)
 
 
 
 # ========================= END =========================
+
 
 
 
