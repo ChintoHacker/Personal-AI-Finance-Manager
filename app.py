@@ -8,7 +8,7 @@ import math
 import pandas as pd
 import os
 
-st.set_page_config(page_title="Apka Financial Advisor — Smart", page_icon="💸", layout="wide")
+st.set_page_config(page_title="Your Financial Advisor — Smart AI Manager", page_icon="💸", layout="wide")
 
 st.markdown("""
 <style>
@@ -29,9 +29,9 @@ h1, h2, h3, h4, h5 {
 
 .app-title {
     font-weight:900;
-    font-size:22px;
+    font-size:35px;
     letter-spacing:0.5px;
-    color:#FFFFFF !important;
+    color:#6CE0AC !important;
 }
 
 /* ---------- MAIN TEXT ---------- */
@@ -61,7 +61,7 @@ p, div, span, label {
 
 /* ---------- CARDS ---------- */
 .stat-card {
-    background: rgba(255,255,255,0.08);
+    background: #7E7E96;
     border-radius:12px;
     border:1px solid rgba(255,255,255,0.18);
     padding:14px;
@@ -135,7 +135,7 @@ p, div, span, label {
 .stSidebar label,
 .sidebar .sidebar-content label,
 .stSidebar .stNumberInput label {
-    color: #CDE0A6 !important;                /* soft white for readability */
+    color: #1D4757 !important;                /* soft white for readability */
     font-weight: 700 !important;
     font-size: 18px !important;
 }
@@ -160,7 +160,7 @@ p, div, span, label {
 
 /* INPUT SECTION BOX – slightly bright for neat grouping */
 .input-section {
-    background: #CDE0A6 !important;
+    background: #5A5A63 !important;
     border: 1px solid rgba(255,255,255,0.20) !important;
     border-radius: 10px !important;
     padding: 12px !important;
@@ -181,17 +181,17 @@ with st.sidebar:
 
     # Input section (kept first)
     st.markdown("<div class='input-section'>", unsafe_allow_html=True)
-    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0, value=85000, step=1000, format="%d")
-    monthly_expenses = st.number_input("Monthly Expenses (PKR)", min_value=0, value=55000, step=1000, format="%d")
-    current_savings = st.number_input("Current Savings (PKR)", min_value=0, value=1500, step=500, format="%d")
+    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0, value=0, step=1000, format="%d")
+    monthly_expenses = st.number_input("Monthly Expenses (PKR)", min_value=0, value=0, step=1000, format="%d")
+    current_savings = st.number_input("Current Savings (PKR)", min_value=0, value=0, step=500, format="%d")
     total_debt = st.number_input("Total Debt (PKR)", min_value=0, value=0, step=1000, format="%d")
     current_investments = st.number_input("Current Investments (PKR)", min_value=0, value=0, step=1000, format="%d")
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("---")
     # Goal at bottom of sidebar (no "amount saved for goal")
-    goal_name = st.text_input("Goal Name", value="Birthday Present")
-    goal_amount = st.number_input("Goal Target Amount (PKR)", min_value=0, value=4000, step=500, format="%d")
+    goal_name = st.text_input("Goal Name")
+    goal_amount = st.number_input("Goal Target Amount (PKR)", min_value=0, value=0, step=500, format="%d")
 
     st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
@@ -202,8 +202,6 @@ with st.sidebar:
     else:
         if 'analysis_run' not in st.session_state:
             st.session_state['analysis_run'] = False
-
-    st.markdown("<div class='muted' style='margin-top:8px'>Click Analyze after changing inputs to refresh suggestions & metrics.</div>", unsafe_allow_html=True)
 
 # ------------------------------
 # Core calculations & helpers
@@ -283,7 +281,7 @@ analysis_tiles = generate_tiles() if st.session_state.get('analysis_run', False)
 # ------------------------------
 st.markdown(f"""
     <div class="top-header">
-      <span class="app-title">Apka Financial Advisor — Smart</span>
+      <span class="app-title">Your Personal Financial Advisor — Smart</span>
       <span style="float:right; color:rgba(230,238,248,0.7); font-size:13px;">{datetime.now().strftime('%d %b %Y')}</span>
     </div>
 """, unsafe_allow_html=True)
@@ -310,10 +308,10 @@ if st.session_state.get('page') == 'landing':
     # Top metric cards
     c1, c2, c3, c4, c5 = st.columns(5)
     metrics = [
-        ("Total (Income + Savings)", total_balance),
-        ("Income", monthly_income),
-        ("Expenses", monthly_expenses),
-        ("Savings", current_savings),
+        ("Total Amount(Income + Savings)", total_balance),
+        ("Monthly Income", monthly_income),
+        ("Monthly Expenses", monthly_expenses),
+        ("Total Savings", current_savings),
         ("Net Worth", net_worth),
     ]
     for col, (label, val) in zip([c1, c2, c3, c4, c5], metrics):
@@ -680,6 +678,7 @@ except Exception as e:
     st.download_button("Download summary (txt)", data=summary_text, file_name="summary.txt")
 
 st.markdown("<div class='muted' style='margin-top:8px'>Report includes summary, goal progress, emergency info & short suggestions.</div>", unsafe_allow_html=True)
+
 
 
 
