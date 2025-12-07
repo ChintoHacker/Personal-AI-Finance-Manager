@@ -135,9 +135,9 @@ p, div, span, label {
 .stSidebar label,
 .sidebar .sidebar-content label,
 .stSidebar .stNumberInput label {
-    color: #F5F7FA !important;                /* soft white for readability */
+    color: #CDE0A6 !important;                /* soft white for readability */
     font-weight: 700 !important;
-    font-size: 14px !important;
+    font-size: 18px !important;
 }
 
 /* INPUT BOXES – clean white + dark text */
@@ -160,7 +160,7 @@ p, div, span, label {
 
 /* INPUT SECTION BOX – slightly bright for neat grouping */
 .input-section {
-    background: rgba(255,255,255,0.15) !important;
+    background: #CDE0A6 !important;
     border: 1px solid rgba(255,255,255,0.20) !important;
     border-radius: 10px !important;
     padding: 12px !important;
@@ -680,6 +680,7 @@ except Exception as e:
     st.download_button("Download summary (txt)", data=summary_text, file_name="summary.txt")
 
 st.markdown("<div class='muted' style='margin-top:8px'>Report includes summary, goal progress, emergency info & short suggestions.</div>", unsafe_allow_html=True)
+
 
 
 
