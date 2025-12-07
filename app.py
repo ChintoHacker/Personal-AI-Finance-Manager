@@ -20,13 +20,12 @@ st.markdown("""
 
     .goal-box {
         background: rgba(255,255,255,0.15); border-radius: 24px; padding: 32px;
-        box-shadow: 0 12px 40px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.st0);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.20);
         text-align: center;
     }
     .goal-bar { height: 38px; background: rgba(255,255,255,0.2); border-radius: 19px; overflow: hidden; margin: 20px 0; }
     .goal-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #ec4899); border-radius: 19px; }
 
-    /* Recommendation Card - Clean & Beautiful */
     .rec-red    { background: linear-gradient(135deg, rgba(239,68,68,0.35), rgba(239,68,68,0.15)); border-left: 6px solid #f87171; }
     .rec-orange { background: linear-gradient(135deg, rgba(251,146,60,0.35), rgba(251,146,60,0.15)); border-left: 6px solid #fb923c; }
     .rec-green  { background: linear-gradient(135deg, rgba(34,197,94,0.35), rgba(34,197,94,0.15)); border-left: 6px solid #4ade80; }
@@ -34,11 +33,15 @@ st.markdown("""
     .rec-message {
         font-size: 19px; font-weight: 700; line-height: 1.6; padding: 20px; border-radius: 18px;
         backdrop-filter: blur(10px); box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        color: white;
     }
 
+    /* Sidebar */
     .stSidebar { background: #2D3452 !important; }
     .stSidebar label { color: #E0E7FF !important; font-weight: 700; font-size: 17px !important; }
-    .input-section { background: rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; margin: 15px 0; border: 1px solid rgba(255,255,255,0.2); }
+
+    .input-section { background: rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; margin: 15px 0; 
+                     border: 1px solid rgba(255,255,255,0.2); }
 
     .stButton>button { background: linear-gradient(90deg,#0ea5e9,#6366f1); color: white; border: none; border-radius: 50px; padding: 16px; font-weight: 700; width: 100%; }
 </style>
@@ -90,12 +93,11 @@ if "page" not in st.session_state:
     st.session_state.page = "overview"
 
 # ==============================
-# OVERVIEW PAGE — AB SAB CLEAN HAI
+# OVERVIEW PAGE
 # ==============================
 if st.session_state.page == "overview":
     st.markdown("<h3 style='text-align:center; color:white; margin:40px 0 30px;'>Overview — Quick Snapshot</h3>", unsafe_allow_html=True)
 
-    # 5 Cards
     c1,c2,c3,c4,c5 = st.columns(5)
     for col, (label, val) in zip([c1,c2,c3,c4,c5], [
         ("Total Amount", total_amount),
@@ -108,7 +110,6 @@ if st.session_state.page == "overview":
 
     st.markdown("<br><br>", unsafe_allow_html=True)
 
-    # Goal Progress + Clean Recommendation
     if goal_progress < 50:
         rec_color = "rec-red"
         rec_msg = "Goal bohot peeche hai!<br><b>Abhi Rs 10,000/month zyada bachaen</b>"
@@ -121,15 +122,9 @@ if st.session_state.page == "overview":
 
     st.markdown(f"""
     <div class='goal-box'>
-        <div style='font-size:24px; font-weight:800; color:white; margin-bottom:16px;'>
-            {goal_name} → Target: Rs {goal_amount:,}
-        </div>
-        <div class='goal-bar'>
-            <div class='goal-fill' style='width:{goal_progress}%'></div>
-        </div>
-        <div style='color:#E0E7FF; font-size:18px; font-weight:600; margin:16px 0;'>
-            {goal_progress:.1f}% Complete  •  ETA: {months_needed} months
-        </div>
+        <div style='font-size:24px; font-weight:800; color:white; margin-bottom:16px;'>{goal_name} → Target: Rs {goal_amount:,}</div>
+        <div class='goal-bar'><div class='goal-fill' style='width:{goal_progress}%'></div></div>
+        <div style='color:#E0E7FF; font-size:18px; font-weight:600; margin:16px 0;'>{goal_progress:.1f}% Complete • ETA: {months_needed} months</div>
 
         <div class='rec-card {rec_color} rec-message'>
             {rec_msg}
@@ -138,6 +133,7 @@ if st.session_state.page == "overview":
     """, unsafe_allow_html=True)
 
     st.markdown("<br><br>", unsafe_allow_html=True)
+
     st.markdown("<div style='text-align:center; background:rgba(255,255,255,0.12); padding:20px; border-radius:18px; color:#E0E7FF; font-size:17px;'>Inputs change karne ke baad sidebar se 'Analyze / Predict' zaroor dabana!</div>", unsafe_allow_html=True)
 
 st.markdown("---")
