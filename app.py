@@ -1,4 +1,3 @@
-# app.py — FINAL version (for Hanan)
 import streamlit as st
 import plotly.graph_objects as go
 import plotly.express as px
@@ -19,7 +18,7 @@ st.markdown(
     <style>
     /* App background & font */
     .stApp {
-        background: linear-gradient(180deg,#041026 0%, #07122a 100%);
+        background: linear-gradient(180deg,#224B7D 0%, #6C9E7F 100%);
         color: #e6eef8;
         font-family: "Segoe UI", Roboto, Arial, sans-serif;
     }
@@ -27,10 +26,10 @@ st.markdown(
     /* Header bar */
     .top-header {
       padding:10px 14px; border-radius:10px;
-      background: linear-gradient(90deg,#071932,#0b1f36);
+      background: linear-gradient(90deg,#274557,#635B5B);
       margin-bottom:12px;
     }
-    .app-title { font-weight:900; font-size:20px; background: linear-gradient(90deg,#7c3aed,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .app-title { font-weight:900; font-size:20px; background: linear-gradient(90deg,#48505E,#274557); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 
     /* Top nav button colors override for visibility */
     .stButton>button {
@@ -615,3 +614,4 @@ except Exception as e:
     st.download_button("Download summary (txt)", data=summary_text, file_name="summary.txt")
 
 st.markdown("<div class='muted' style='margin-top:8px'>Report includes summary, goal progress, emergency info & short suggestions.</div>", unsafe_allow_html=True)
+
