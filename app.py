@@ -1,4 +1,3 @@
-```python
 import streamlit as st
 import plotly.graph_objects as go
 import plotly.express as px
@@ -724,4 +723,4 @@ except Exception as e:
     st.download_button("Download summary (txt)", data=summary_text, file_name="summary.txt")
 
 st.markdown("<div class='muted' style='margin-top:8px'>Report includes summary, goal progress, emergency info & short suggestions.</div>", unsafe_allow_html=True)
-```
+
