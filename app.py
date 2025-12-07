@@ -124,12 +124,14 @@ p, div, span, label {
 }
 
 /* ---------- SIDEBAR TEXT ONLY (no layout change) ---------- */
-.css-1d391kg, .stSidebar, .sidebar .sidebar-content {
-    color:white !important;
+.stSidebar, .css-1d391kg, .sidebar-content {
+    background: rgba(255, 255, 255, 0.07) !important;
+    backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 label, .stNumberInput label {
-    color:white !important;
+    color:black !important;
     font-weight:600;
 }
 
@@ -644,6 +646,7 @@ except Exception as e:
     st.download_button("Download summary (txt)", data=summary_text, file_name="summary.txt")
 
 st.markdown("<div class='muted' style='margin-top:8px'>Report includes summary, goal progress, emergency info & short suggestions.</div>", unsafe_allow_html=True)
+
 
 
 
