@@ -123,59 +123,49 @@ p, div, span, label {
     border-left:4px solid #10b981;
 }
 
-/* Sidebar Background */
-.sidebar {
-    background: #2D3452 !important;
+/* ---------------------- SIDEBAR FINAL PERFECT VERSION ---------------------- */
+
+/* Sidebar background (only this — as requested) */
+.stSidebar, .css-1d391kg, .sidebar .sidebar-content {
+    background: #2D3452 !important;           /* Your chosen color */
+    border-right: 1px solid rgba(255,255,255,0.10);
 }
 
-/* Section Title - "Apki Financial Inputs" */
-.financial-section h3,
-.financial-section .title {
-    color: #FFFFFF !important;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+/* LABELS – bright & clean for this background */
+.stSidebar label,
+.sidebar .sidebar-content label,
+.stSidebar .stNumberInput label {
+    color: #F5F7FA !important;                /* soft white for readability */
+    font-weight: 700 !important;
+    font-size: 14px !important;
 }
 
-/* Labels/Text Color */
-.financial-inputs label,
-.financial-inputs .input-label {
-    color: #E0E7FF !important;  /* Soft light purple-white - bahut suit karta hai */
-    font-size: 14px;
-    font-weight: 500;
+/* INPUT BOXES – clean white + dark text */
+.stSidebar input,
+.sidebar .sidebar-content input,
+.stSidebar .stNumberInput input {
+    background: #FFFFFF !important;           /* white input background */
+    color: #000000 !important;                /* black text for clarity */
+    border: 1px solid #CBD5E1 !important;     /* light border */
+    border-radius: 8px !important;
+    padding: 7px 10px !important;
 }
 
-/* Input Fields Border & Background */
-.financial-inputs input,
-.financial-inputs .custom-input {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border: 1.5px solid #6366F1 !important;  /* Indigo border - premium feel */
-    color: #FFFFFF !important;
-    border-radius: 12px !important;
-    padding: 12px 16px !important;
-    font-size: 16px;
+/* INPUT FOCUS – premium glow */
+.stSidebar input:focus,
+.sidebar .sidebar-content input:focus {
+    border: 1px solid #60A5FA !important;      /* smooth blue glow */
+    box-shadow: 0 0 6px rgba(96,165,250,0.4);
 }
 
-/* Input Focus Glow */
-.financial-inputs input:focus,
-.financial-inputs .custom-input:focus {
-    outline: none;
-    border-color: #818CF8 !important;
-    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.3) !important;
-    background: rgba(255, 255, 255, 0.12) !important;
+/* INPUT SECTION BOX – slightly bright for neat grouping */
+.input-section {
+    background: rgba(255,255,255,0.15) !important;
+    border: 1px solid rgba(255,255,255,0.20) !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
 }
 
-/* Plus/Minus Buttons */
-.financial-inputs .increment-btn,
-.financial-inputs .decrement-btn {
-    color: #C7D2FE !important;
-    background: rgba(99, 102, 241, 0.2) !important;
-}
-
-.financial-inputs .increment-btn:hover,
-.financial-inputs .decrement-btn:hover {
-    color: #FFFFFF !important;
-    background: rgba(99, 102, 241, 0.4) !important;
-}
 
 
 
@@ -690,6 +680,7 @@ except Exception as e:
     st.download_button("Download summary (txt)", data=summary_text, file_name="summary.txt")
 
 st.markdown("<div class='muted' style='margin-top:8px'>Report includes summary, goal progress, emergency info & short suggestions.</div>", unsafe_allow_html=True)
+
 
 
 
