@@ -3,12 +3,11 @@ import plotly.graph_objects as go
 import plotly.express as px
 from datetime import datetime
 import math
-import pandas as pd
 
 st.set_page_config(page_title="Your Financial Advisor — Smart", page_icon="money_with_wings", layout="wide")
 
 # ==============================
-# FULL STYLING (premium look)
+# FULL STYLING
 # ==============================
 st.markdown("""
 <style>
@@ -17,15 +16,12 @@ st.markdown("""
         color: #F7FAFC;
         font-family: "Inter", sans-serif;
     }
-    h1, h2, h3, h4 { color: #FFFFFF !important; font-weight: 800;
-
     .app-title {
         font-size: 38px !important;
         font-weight: 900 !important;
         color: #6CE0AC !important;
         letter-spacing: 0.5px;
     }
-
     /* Cards */
     .stat-card {
         background: rgba(126,126,150,0.9);
@@ -46,19 +42,8 @@ st.markdown("""
         border: 1px solid rgba(255,255,255,0.25);
         box-shadow: 0 6px 20px rgba(0,0,0,0.25);
     }
-    .goal-bar {
-        height: 28px;
-        background: rgba(255,255,255,0.2);
-        border-radius: 14px;
-        overflow: hidden;
-        margin: 12px 0;
-    }
-    .goal-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #06b6d4, #7c3aed);
-        border-radius: 14px;
-        width: 0%;
-    }
+    .goal-bar { height: 28px; background: rgba(255,255,255,0.2); border-radius: 14px; overflow: hidden; margin: 12px 0; }
+    .goal-fill { height: 100%; background: linear-gradient(90deg, #06b6d4, #7c3aed); border-radius: 14px; }
 
     /* Tiles */
     .tile {
@@ -70,7 +55,7 @@ st.markdown("""
         height: 100%;
     }
     .tile-warn { border-left: 6px solid #fb7185; }
-    .tile-good { border-left: 6px solid #10b981; }
+    .tile-good { border-left:6px solid #10b981; }
     .tile-title { font-size: 17px; font-weight: 700; color: white; }
     .tile-sub { font-size: 14px; color: #E0E7FF; margin-top: 6px; }
 
@@ -88,9 +73,10 @@ st.markdown("""
         border-radius: 12px;
         padding: 16px;
         border: 1px solid rgba(255,255,255,0.15);
+        margin-bottom: 20px;
     }
 
-    /* Nav Buttons */
+    /* Buttons */
     .stButton>button {
         background: linear-gradient(90deg, #0ea5e9, #6366f1);
         color: white;
@@ -129,22 +115,23 @@ st.markdown("""
 # SIDEBAR
 # ==============================
 with st.sidebar:
-    st.markdown("<h2 style='color:#6CE0AC'>Apki Financial Inputs</h2>", unsafe_allow_html=True)
-    st.markdown("<div class='input-section'>", unsafe_allow=True)
-    monthly_income = st.number_input("Monthly Income (PKR)", 0, step=1000, value=85000)
-    monthly_expenses = st.number_input("Monthly Expenses (PKR)", 0, step=1000, value=55000)
-    current_savings = st.number_input("Current Savings (PKR)", 0, step=5000, value=150000)
-    total_debt = st.number_input("Total Debt (PKR)", 0, step=1000, value=0)
-    current_investments = st.number_input("Current Investments (PKR)", 0, step=1000, value=50000)
-    st.markdown("</div>", unsafe_allow=True)
+    st.markdown("<h2 style='color:#6CE0AC; text-align:center;'>Apki Financial Inputs</h2>", unsafe_allow_html=True)
+    
+    st.markdown("<div class='input-section'>", unsafe_allow_html=True)
+    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0, value=85000, step=1000)
+    monthly_expenses = st.number_input("Monthly Expenses (PKR)", min_value=0, value=55000, step=1000)
+    current_savings = st.number_input("Current Savings (PKR)", min_value=0, value=150000, step=5000)
+    total_debt = st.number_input("Total Debt (PKR)", min_value=0, value=0, step=1000)
+    current_investments = st.number_input("Current Investments (PKR)", min_value=0, value=50000, step=1000)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("---")
-    goal_name = st.text_input("Goal Name", "Dream House")
-    goal_amount = st.number_input("Goal Target Amount (PKR)", 0, step=50000, value=5000000)
+    goal_name = st.text_input("Goal Name", value="Dream House")
+    goal_amount = st.number_input("Goal Target Amount (PKR)", min_value=1, value=5000000, step=50000)
 
-    if st.button("Analyze / Predict", type="primary"):
+    if st.button("Analyze / Predict", type="primary", use_container_width=True):
         st.session_state.analyzed = True
-        st.success("Updated")
+        st.success("Analysis Updated")
 
 # ==============================
 # CALCULATIONS
@@ -153,8 +140,8 @@ total_balance = monthly_income + current_savings
 net_worth = current_savings + current_investments - total_debt
 monthly_save = max(0, monthly_income - monthly_expenses)
 
-goal_progress = min(100, (current_savings / goal_amount * 100) if goal_amount > 0 else 0)
-months_needed = "N/A" if monthly_save <= 0 else max(0, round((goal_amount - current_savings) / monthly_save)) if goal_amount > current_savings else 0
+goal_progress = min(100.0, (current_savings / goal_amount * 100) if goal_amount > 0 else 0)
+months_needed = "N/A" if monthly_save <= 0 else max(0, round((goal_amount - current_savings) / monthly_save))
 emergency_months = round(current_savings / max(1, monthly_expenses), 1)
 
 # ==============================
@@ -162,28 +149,29 @@ emergency_months = round(current_savings / max(1, monthly_expenses), 1)
 # ==============================
 col1, col2 = st.columns([5,1])
 with col1:
-    st.markdown("<h1 class='app-title'>Your Personal Financial Advisor — Smart</h1>", unsafe_allow=True)
+    st.markdown("<h1 class='app-title'>Your Personal Financial Advisor — Smart</h1>", unsafe_allow_html=True)
 with col2:
-    st.markdown(f"<div class='date-badge'>Today {datetime.now().strftime('%d %b %Y')}</div>", unsafe_allow=True)
+    st.markdown(f"<div class='date-badge'>Today {datetime.now().strftime('%d %b %Y')}</div>", unsafe_allow_html=True)
 
-st.markdown("<br>", unsafe_allow=True)
+st.markdown("<br><br>", unsafe_allow_html=True)
 
-# Nav Buttons
+# Nav
 c1, c2, c3 = st.columns(3)
 with c1:
-    if st.button("Overview"): st.session_state.page = "overview"
+    if st.button("Overview", use_container_width=True): st.session_state.page = "overview"
 with c2:
-    if st.button("AI Insights"): st.session_state.page = "insights"
+    if st.button("AI Insights", use_container_width=True): st.session_state.page = "insights"
 with c3:
-    if st.button("Visuals"): st.session_state.page = "visuals"
+    if st.button("Visuals", use_container_width=True): st.session_state.page = "visuals"
+
 if "page" not in st.session_state:
     st.session_state.page = "overview"
 
 # ==============================
-# LANDING PAGE (exactly jis order mein tune bola)
+# LANDING PAGE (exact order jo tune manga)
 # ==============================
 if st.session_state.page == "overview":
-    st.markdown("<h3>Overview — Quick Snapshot</h3>", unsafe_allow=True)
+    st.markdown("<h3>Overview — Quick Snapshot</h3>", unsafe_allow_html=True)
 
     # 1. Cards
     cols = st.columns(5)
@@ -195,62 +183,65 @@ if st.session_state.page == "overview":
         ("Net Worth", net_worth)
     ]
     for col, (label, value) in zip(cols, data):
-        col.markdown(f"<div class='stat-card'><div class='stat-label'>{label}</div><div class='stat-value'>Rs {value:,}</div></div>", unsafe_allow=True)
+        col.markdown(f"<div class='stat-card'><div class='stat-label'>{label}</div><div class='stat-value'>Rs {value:,}</div></div>", unsafe_allow_html=True)
 
     st.markdown("---")
 
     # 2. Goal Progress
-    st.markdown("<h4>Goal Progress</h4>", unsafe_allow=True)
+    st.markdown("<h4>Goal Progress</h4>", unsafe_allow_html=True)
     st.markdown(f"""
     <div class='goal-wrap'>
-        <div style='font-size:19px; font-weight:700; color:white;'>{goal_name} → Rs {goal_amount:,}</div>
+        <div style='font-size:19px; font-weight:700; color:white; margin-bottom:10px;'>{goal_name} → Rs {goal_amount:,}</div>
         <div class='goal-bar'><div class='goal-fill' style='width:{goal_progress}%'></div></div>
-        <div style='display:flex; justify-content:space-between; color:#E0E7FF;'>
+        <div style='display:flex; justify-content:space-between; color:#E0E7FF; font-size:15px;'>
             <span><b>{goal_progress:.1f}%</b> Complete • Rs {current_savings:,} saved</span>
             <span><b>ETA:</b> {months_needed} months</span>
         </div>
     </div>
-    """, unsafe_allow=True)
+    """, unsafe_allow_html=True)
 
     st.markdown("---")
 
     # 3. Recommended Actions
-    st.markdown("<h4>Recommended Actions</h4>", unsafe_allow=True)
+    st.markdown("<h4>Recommended Actions</h4>", unsafe_allow_html=True)
     r1, r2 = st.columns(2)
     with r1:
         st.markdown(f"""
         <div class='tile {"tile-good" if monthly_save >= 0.2*monthly_income else "tile-warn"}'>
-            <div class='tile-title'>{"Great Saving Habit" if monthly_save >= 0.2*monthly_income else "Increase Savings"}</div>
-            <div class='tile-sub'>Saving Rs {monthly_save:,}/mo<br><b>Target: 20% of income</b></div>
+            <div class='tile-title'>{"Great Saving!" if monthly_save >= 0.2*monthly_income else "Increase Monthly Saving"}</div>
+            <div class='tile-sub'>Currently saving Rs {monthly_save:,}/mo<br><b>Aim for 20% of income</b></div>
         </div>
-        """, unsafe_allow=True)
+        """, unsafe_allow_html=True)
     with r2:
         st.markdown(f"""
         <div class='tile {"tile-good" if total_debt == 0 else "tile-warn"}'>
-            <div class='tile-title'>{"Debt Free" if total_debt == 0 else "Clear Debt First"}</div>
+            <div class='tile-title'>{"Debt Free" if total_debt == 0 else "Clear Debt"}</div>
             <div class='tile-sub'>Outstanding: Rs {total_debt:,}</div>
         </div>
-        """, unsafe_allow=True)
+        """, unsafe_allow_html=True)
 
     st.markdown("---")
 
-    # 4. Quick Insights (sabse neeche – jis tarah tune kaha)
-    st.markdown("<h4>Quick Insights</h4>", unsafe_allow=True)
+    # 4. Quick Insights (sabse neeche)
+    st.markdown("<h4>Quick Insights</h4>", unsafe_allow_html=True)
     insights = [
         ("Emergency Fund", f"{emergency_months} months", "Good" if emergency_months >= 6 else "Low"),
         ("Savings Rate", f"{(monthly_save/monthly_income*100):.0f}%", "Good" if monthly_save >= 0.2*monthly_income else "Low"),
         ("Goal Progress", f"{goal_progress:.0f}%", "Good" if goal_progress >= 50 else "Behind"),
-        ("Debt", "No Debt" if total_debt==0 else f"Rs {total_debt:,}", "Good" if total_debt==0 else "Warning")
+        ("Debt Status", "No Debt" if total_debt==0 else f"Rs {total_debt:,}", "Good" if total_debt==0 else "Warning")
     ]
     i1,i2,i3,i4 = st.columns(4)
     for col, (title, value, status) in zip([i1,i2,i3,i4], insights):
         cls = "tile-good" if "Good" in status else "tile-warn"
-        icon = "Check" if "Good" in status else "Warning"
-        col.markdown(f"<div class='tile {cls}'><div class='tile-title'>{icon} {title}</div><div class='tile-sub'>{value}</div></div>", unsafe_allow=True)
+        col.markdown(f"""
+        <div class='tile {cls}'>
+            <div class='tile-title'>{"Check" if "Good" in status else "Warning"} {title}</div>
+            <div class='tile-sub'>{value}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("<div class='tip-box'>Tip: Click 'Analyze / Predict' after changing any input to refresh all data!</div>", unsafe_allow=True)
+    st.markdown("<div class='tip-box'>Tip: Click 'Analyze / Predict' in sidebar after changing any value to refresh insights!</div>", unsafe_allow_html=True)
 
-# Baki pages chahiye to bol dena, abhi sirf landing perfect hai
 st.markdown("---")
-st.caption("© 2025 Your Personal Financial Advisor")
+st.caption("© 2025 Your Personal Financial Advisor - Made with love")
