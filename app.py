@@ -7,6 +7,56 @@ import pandas as pd
 # ---------------- Page config ----------------
 st.set_page_config(page_title="Your Financial Advisor — Smart", page_icon="trophy", layout="wide")
 
+
+# ==================== DARK NEON MODE GLOBAL STYLING ====================
+st.markdown("""
+<style>
+
+body, .stApp {
+    background-color: #0a0f1f;
+    background-image:
+        radial-gradient(circle at top left, #2b0057 0%, transparent 60%),
+        radial-gradient(circle at top right, #002f4f 0%, transparent 70%),
+        radial-gradient(circle at bottom left, #004f4f 0%, transparent 70%);
+    color: #e0e9ff !important;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Neon Text */
+.neon-title {
+    color: #8b5cf6;
+    text-shadow: 0 0 12px #8b5cf6, 0 0 22px #8b5cf6;
+}
+
+/* Neon Glass Cards */
+.neon-card {
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 22px;
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 25px #6C2BD980;
+    transition: 0.3s ease;
+}
+.neon-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 35px #8b5cf6aa;
+}
+
+/* Fade animation */
+.fade {
+    animation: fadeIn 1s ease forwards;
+}
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+
 # ========================= CSS (FINAL PREMIUM + CELEBRATION) =========================
 st.markdown("""
 <style>
@@ -555,6 +605,7 @@ elif st.session_state["page"] == "visuals":
 
 
 # ========================= END =========================
+
 
 
 
