@@ -10,102 +10,133 @@ import os
 
 st.set_page_config(page_title="Apka Financial Advisor — Smart", page_icon="💸", layout="wide")
 
-# ------------------------------
-# CSS / Styling (global)
-# ------------------------------
-st.markdown(
-    """
-    <style>
-    /* App background & font */
-    .stApp {
-        background: linear-gradient(180deg,#224B7D 0%, #6C9E7F 100%);
-        color: #e6eef8;
-        font-family: "Segoe UI", Roboto, Arial, sans-serif;
-    }
+<style>
 
-    /* Header bar */
-    .top-header {
-      padding:10px 14px; border-radius:10px;
-      background: linear-gradient(90deg,#274557,#635B5B);
-      margin-bottom:12px;
-    }
-    .app-title { font-weight:900; font-size:20px; background: linear-gradient(90deg,#48505E,#274557); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+/* ---------- GLOBAL APP ---------- */
+.stApp {
+    background: linear-gradient(180deg,#224B7D 0%, #6C9E7F 100%);
+    color: #F7FAFC !important;      /* Bright clean white text */
+    font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+}
 
-    /* Top nav button colors override for visibility */
-    .stButton>button {
-      background: linear-gradient(90deg,#0ea5e9,#7c3aed) !important;
-      color: white;
-      border-radius:10px;
-      padding:8px 12px;
-      font-weight:700;
-      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
-    }
-    .stButton>button:hover { transform: translateY(-3px); box-shadow: 0 18px 50px rgba(2,6,23,0.8); }
+/* ---------- HEADERS ---------- */
+h1, h2, h3, h4, h5 {
+    color: #FFFFFF !important;
+    font-weight: 800;
+    text-shadow: 0px 0px 6px rgba(0,0,0,0.35);
+}
 
-    /* Sidebar shading — try some selectors to match multiple Streamlit versions */
-    .css-1d391kg, .stSidebar, .sidebar .sidebar-content {
-        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-        border-right: 1px solid rgba(255,255,255,0.03);
-        padding: 16px;
-        border-radius: 12px;
-    }
+.app-title {
+    font-weight:900;
+    font-size:22px;
+    letter-spacing:0.5px;
+    color:#FFFFFF !important;
+}
 
-    /* Inputs container style */
-    .input-section {
-      background: rgba(255,255,255,0.02);
-      padding:12px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,0.03);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-    }
+/* ---------- MAIN TEXT ---------- */
+p, div, span, label {
+    color:#F1F5F9 !important;  
+}
 
-    /* Stat card */
-    .stat-card {
-      background: rgba(255,255,255,0.02);
-      border-radius:12px; padding:12px; text-align:center;
-      border: 1px solid rgba(255,255,255,0.03);
-    }
-    .stat-label { color: rgba(230,238,248,0.7); font-size:13px; }
-    .stat-value { font-weight:800; font-size:20px; margin-top:6px; }
+/* Muted text – more visible than before */
+.muted {
+    color: rgba(255,255,255,0.82) !important;
+}
 
-    /* Goal */
-    .goal-wrap {
-      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.03);
-    }
-    .goal-bar { height:20px; background: rgba(255,255,255,0.03); border-radius:12px; overflow:hidden; }
-    .goal-fill { height:100%; background: linear-gradient(90deg,#06b6d4,#7c3aed); transition: width 0.9s; box-shadow: 0 8px 30px rgba(6,182,212,0.08); }
+/* ---------- BUTTONS ---------- */
+.stButton > button {
+    background: linear-gradient(90deg,#38bdf8,#818cf8) !important;
+    color:white !important;
+    font-weight:700 !important;
+    border-radius:10px;
+    padding:8px 14px;
+    border:none;
+    box-shadow:0 4px 18px rgba(0,0,0,0.35);
+}
 
-    /* Tiles for suggestions & quick insights */
-    .tile {
-      padding:12px; border-radius:10px; margin:6px; background: rgba(255,255,255,0.02);
-      display:flex; align-items:center; min-height:68px;
-      border:1px solid rgba(255,255,255,0.03);
-    }
-    .tile-icon { width:46px; text-align:center; font-size:20px; margin-right:10px; }
-    .tile-title { font-weight:800; font-size:14px; }
-    .tile-sub { color: rgba(230,238,248,0.75); font-size:13px; margin-top:4px; }
+.stButton > button:hover {
+    transform:scale(1.03);
+    box-shadow:0 8px 28px rgba(0,0,0,0.45);
+}
 
-    .tile-warn { border-left:4px solid #fb7185; }
-    .tile-good { border-left:4px solid #10b981; }
+/* ---------- CARDS / METRICS ---------- */
+.stat-card {
+    background: rgba(255,255,255,0.08);
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.18);
+    padding:14px;
+    color:white;
+}
 
-    .muted { color: rgba(230,238,248,0.65); font-size:13px; }
+.stat-label {
+    font-size:14px;
+    color:#E2E8F0 !important;
+}
 
-    /* PDF button */
-    .pdf-btn {
-      background: linear-gradient(90deg,#16a34a,#22c55e);
-      color:white; padding:10px 16px; border-radius:10px; border:none; font-weight:800;
-      box-shadow: 0 8px 30px rgba(34,197,94,0.12);
-    }
-    .pdf-btn:hover { transform: translateY(-3px); box-shadow: 0 18px 50px rgba(34,197,94,0.24); }
+.stat-value {
+    font-size:22px;
+    font-weight:800;
+    color:#FFFFFF !important;
+}
 
-    @media (max-width:900px) {
-      .tile { margin:6px 0; }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+/* ---------- GOAL BAR ---------- */
+.goal-wrap {
+    background: rgba(255,255,255,0.1);
+    border-radius:12px;
+    padding:12px;
+    border:1px solid rgba(255,255,255,0.2);
+}
+
+.goal-bar {
+    height:20px;
+    background: rgba(255,255,255,0.15);
+    border-radius:12px;
+}
+
+.goal-fill {
+    background: linear-gradient(90deg,#06b6d4,#7c3aed);
+}
+
+/* ---------- TILES (Quick Insights & Suggestions) ---------- */
+.tile {
+    padding:12px;
+    border-radius:10px;
+    background: rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.22);
+    color:white;
+}
+
+.tile-title {
+    font-size:15px;
+    font-weight:800;
+    color:white !important;
+}
+
+.tile-sub {
+    font-size:13px;
+    color:#E2E8F0 !important;
+}
+
+.tile-warn {
+    border-left:4px solid #fb7185;
+}
+
+.tile-good {
+    border-left:4px solid #10b981;
+}
+
+/* ---------- SIDEBAR (No layout changes — just readable text) ---------- */
+.css-1d391kg, .stSidebar, .sidebar .sidebar-content {
+    color:white !important;
+}
+
+label, .stNumberInput label {
+    color:white !important;
+    font-weight:600;
+}
+
+</style>
+
 
 # ------------------------------
 # Sidebar: EXACT order requested (no change) — inputs then goal at bottom
@@ -614,4 +645,5 @@ except Exception as e:
     st.download_button("Download summary (txt)", data=summary_text, file_name="summary.txt")
 
 st.markdown("<div class='muted' style='margin-top:8px'>Report includes summary, goal progress, emergency info & short suggestions.</div>", unsafe_allow_html=True)
+
 
