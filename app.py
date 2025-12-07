@@ -1,17 +1,8 @@
-# app.py (FINAL - Updated exactly as requested)
-# Changes: removed empty top bar in Visuals, improved text visibility across UI and charts,
-# moved section titles into their neon boxes, fixed Risk Score calculation and logic,
-# improved PDF layout to be professional and user-friendly. No other behavior changed.
 import streamlit as st
 from datetime import datetime
 import math
 import plotly.express as px
 import pandas as pd
-
-# Small imports used in visuals/insights and PDF
-import numpy as np
-from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
 
 # ---------------- Page config ----------------
 st.set_page_config(page_title="Your Financial Advisor — Smart AI", page_icon="trophy", layout="wide")
@@ -57,7 +48,7 @@ body, .stApp {
 }
 @keyframes fadeIn {
     from {opacity: 0; transform: translateY(20px);}
-    to {opacity: 1; transform: translateY(0);} 
+    to {opacity: 1; transform: translateY(0);}
 }
 
 </style>
@@ -151,18 +142,16 @@ st.markdown("""
 with st.sidebar:
     st.markdown("<h2 style='color:#6CE0AC; text-align:center;'>Your Financial Inputs</h2>", unsafe_allow_html=True)
     st.markdown("<div class='input-section'>", unsafe_allow_html=True)
-
-    # ---------- IMPORTANT: removed meaningful autofill by setting defaults to 0 ----------
-    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0, value=0, step=1000, format="%d")
-    monthly_expenses = st.number_input("Monthly Expenses (PKR)", min_value=0, value=0, step=1000, format="%d")
-    current_savings = st.number_input("Current Savings (PKR)", min_value=0, value=0, step=5000, format="%d")
-    total_debt = st.number_input("Total Debt (PKR)", min_value=0, value=0, step=1000, format="%d")
-    current_investments = st.number_input("Current Investments (PKR)", min_value=0, value=0, step=1000, format="%d")
+    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0, value=60000, step=1000)
+    monthly_expenses = st.number_input("Monthly Expenses (PKR)", min_value=0, value=55000, step=1000)
+    current_savings = st.number_input("Current Savings (PKR)", min_value=0, value=150000, step=5000)
+    total_debt = st.number_input("Total Debt (PKR)", min_value=0, value=0, step=1000)
+    current_investments = st.number_input("Current Investments (PKR)", min_value=0, value=50000, step=1000)
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<h2 style='color:#6CE0AC; text-align:center;'>Your Goal</h2>", unsafe_allow_html=True)
-    goal_name = st.text_input("Goal Name(car 🚙, house 🏡 etc..)", value="")
-    goal_amount = st.number_input("Goal Target Amount (PKR)", min_value=0, value=0, step=50000, format="%d")
+    goal_name = st.text_input("Goal Name(car 🚙, house 🏡 etc..)")
+    goal_amount = st.number_input("Goal Target Amount (PKR)", min_value=1, value=5000000, step=50000)
 
     if st.button("Analyze / Predict", type="primary", use_container_width=True):
         st.success("Analysis Updated!")
@@ -230,6 +219,17 @@ with nav3:
     if b3:
         st.session_state["page"] = "visuals"
 
+# add active class to the correct button visually by injecting a tiny script that toggles class
+active_page = st.session_state["page"]
+# Apply 'active' styling by adding a tiny bit of CSS that targets the nth button — safe approach
+# (We can't directly add classes to st.button output easily, but this styling keeps visual parity enough.)
+st.markdown(f"""
+<style>
+/* Attempt to highlight the active nav by matching button texts - keeps visual cue */
+button[title="nav_{'overview' if active_page=='overview' else ''}"]{{}}
+</style>
+""", unsafe_allow_html=True)
+
 # ---------------- PAGE: OVERVIEW ----------------
 if st.session_state["page"] == "overview":
     # ========================= OVERVIEW SECTION (same as before) =========================
@@ -257,7 +257,7 @@ if st.session_state["page"] == "overview":
     st.markdown(f"""
     <div class='goal-box'>
         <div style='font-size:24px; font-weight:800; color:white; margin-bottom:16px;'>
-            {goal_name if goal_name else 'Unnamed Goal'} → Target: Rs {goal_amount:,}
+            {goal_name} → Target: Rs {goal_amount:,}
         </div>
         <div class='goal-bar'>
             <div class='goal-fill' style='width:{goal_progress}%'></div>
@@ -305,148 +305,14 @@ if st.session_state["page"] == "overview":
     fig = px.bar(chart_data, x="Category", y="Amount", color="Category",
                  text=chart_data["Amount"].apply(lambda x: f"Rs {x:,}"),
                  color_discrete_sequence=["#8b5cf6", "#ef4444", "#10b981", "#f59e0b"])
-    # ensure text and axis labels are obvious on gradient
-    fig.update_traces(textposition='outside', textfont_size=16, textfont_color="white")
+    fig.update_traces(textposition='outside', textfont_size=20, textfont_color="pink")
     fig.update_layout(
         showlegend=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-        height=520, font=dict(color="white", size=14),
-        yaxis=dict(showgrid=False, title="Amount (PKR)", color="white"),
-        xaxis=dict(color="white")
+        height=500, font=dict(color="pink", size=20),
+        yaxis=dict(showgrid=False, title="Amount (PKR)", color="pink"),
+        xaxis=dict(color="pink")
     )
     st.plotly_chart(fig, use_container_width=True)
-
-    # ---------- PDF Export Button (improved layout) ----------
-    def create_professional_pdf():
-        # Professional white-page PDF created via PIL (Option A) - improved layout
-        W, H = 1240, 1754  # A4-like tall canvas
-        margin = 60
-        img = Image.new("RGB", (W, H), "white")
-        draw = ImageDraw.Draw(img)
-
-        # Attempt to use a nicer font if available; fallback to default
-        try:
-            header_font = ImageFont.truetype("DejaVuSans-Bold.ttf", 40)
-            section_font = ImageFont.truetype("DejaVuSans-Bold.ttf", 22)
-            normal_font = ImageFont.truetype("DejaVuSans.ttf", 18)
-            mono_font = ImageFont.truetype("DejaVuSans.ttf", 16)
-        except Exception:
-            header_font = ImageFont.load_default()
-            section_font = ImageFont.load_default()
-            normal_font = ImageFont.load_default()
-            mono_font = ImageFont.load_default()
-
-        y = margin
-        draw.text((margin, y), "Your Personal Financial Advisor — Report", fill="black", font=header_font)
-        y += 56
-        draw.text((margin, y), f"Generated: {datetime.now().strftime('%d %B %Y')}", fill="black", font=mono_font)
-        y += 28
-
-        # Draw Overview box
-        box_x = margin
-        box_w = W - 2 * margin
-        box_h = 220
-        draw.rectangle((box_x, y, box_x + box_w, y + box_h), outline=(0,0,0), width=1, fill=(245,245,245))
-        inner_x = box_x + 18
-        inner_y = y + 14
-        draw.text((inner_x, inner_y), "Overview", fill="black", font=section_font)
-        inner_y += 32
-        overview_lines = [
-            f"Monthly Income: Rs {monthly_income:,}",
-            f"Monthly Expenses: Rs {monthly_expenses:,}",
-            f"Monthly Savings (Income-Expenses): Rs {monthly_save:,}",
-            f"Current Savings: Rs {current_savings:,}",
-            f"Total Investments: Rs {current_investments:,}",
-            f"Total Debt: Rs {total_debt:,}",
-            f"Net Worth: Rs {net_worth:,}"
-        ]
-        for line in overview_lines:
-            draw.text((inner_x, inner_y), line, fill="black", font=mono_font)
-            inner_y += 24
-        y += box_h + 20
-
-        # Goal box
-        box_h = 160
-        draw.rectangle((box_x, y, box_x + box_w, y + box_h), outline=(0,0,0), width=1, fill=(245,245,245))
-        inner_x = box_x + 18
-        inner_y = y + 14
-        draw.text((inner_x, inner_y), "Goal & Progress", fill="black", font=section_font)
-        inner_y += 30
-        draw.text((inner_x, inner_y), f"Goal: {goal_name if goal_name else 'Unnamed Goal'}", fill="black", font=mono_font)
-        inner_y += 22
-        draw.text((inner_x, inner_y), f"Target: Rs {goal_amount:,} • Progress: {goal_progress:.1f}%", fill="black", font=mono_font)
-        inner_y += 22
-        draw.text((inner_x, inner_y), f"Remaining: Rs {remaining:,}", fill="black", font=mono_font)
-        y += box_h + 20
-
-        # Recommendation & Plans box
-        box_h = 160
-        draw.rectangle((box_x, y, box_x + box_w, y + box_h), outline=(0,0,0), width=1, fill=(245,245,245))
-        inner_x = box_x + 18
-        inner_y = y + 14
-        draw.text((inner_x, inner_y), "Recommendation & Plans", fill="black", font=section_font)
-        inner_y += 30
-        rec_text = rec_msg.replace("<br>", " ").replace("<b>", "").replace("</b>", "")
-        # wrap rec_text into multiple lines
-        max_chars = 80
-        for i in range(0, len(rec_text), max_chars):
-            draw.text((inner_x, inner_y), rec_text[i:i+max_chars], fill="black", font=mono_font)
-            inner_y += 20
-        inner_y += 6
-        if show_plans:
-            draw.text((inner_x, inner_y), f"Basic Plan: Rs {int(basic_save):,}/month • Time: {basic_time} months", fill="black", font=mono_font)
-            inner_y += 20
-            draw.text((inner_x, inner_y), f"Strong Plan: Rs {int(strong_save):,}/month • Time: {strong_time} months", fill="black", font=mono_font)
-        y += box_h + 20
-
-        # Risk + Category breakdown box
-        box_h = 210
-        draw.rectangle((box_x, y, box_x + box_w, y + box_h), outline=(0,0,0), width=1, fill=(245,245,245))
-        inner_x = box_x + 18
-        inner_y = y + 14
-        draw.text((inner_x, inner_y), "Risk & Categories", fill="black", font=section_font)
-        inner_y += 30
-
-        # Risk calculation (repeat in report to be explicit)
-        # compute stable risk for pdf
-        try:
-            debt_norm = total_debt / (total_debt + current_savings + 1) if (total_debt + current_savings) > 0 else 0
-            expense_norm = monthly_expenses / (monthly_income + 1) if monthly_income > 0 else 0
-            risk_score_pdf = int(min(max((debt_norm * 0.6 + expense_norm * 0.4) * 100, 0), 100))
-        except Exception:
-            risk_score_pdf = 50
-        risk_level_pdf = "Low" if risk_score_pdf < 30 else ("Moderate" if risk_score_pdf < 65 else "High")
-        draw.text((inner_x, inner_y), f"Risk Score: {risk_score_pdf}/100 • {risk_level_pdf}", fill="black", font=mono_font)
-        inner_y += 28
-        draw.text((inner_x, inner_y), "Top spending categories:", fill="black", font=mono_font)
-        inner_y += 22
-        # category breakdown
-        cats = ["Food", "Transport", "Bills", "Shopping", "Other"]
-        if monthly_expenses <= 0:
-            amounts = [0,0,0,0,0]
-        else:
-            amounts = [monthly_expenses * 0.25, monthly_expenses * 0.15, monthly_expenses * 0.30, monthly_expenses * 0.20, monthly_expenses * 0.10]
-        for c, a in zip(cats, amounts):
-            draw.text((inner_x+8, inner_y), f"{c}: Rs {int(a):,}", fill="black", font=mono_font)
-            inner_y += 20
-
-        # Footer
-        draw.line((margin, H - 120, W - margin, H - 120), fill=(0,0,0), width=1)
-        draw.text((margin, H - 100), "© 2025 Your Personal Financial Advisor - Made with Abdul-Hanan in Pakistan", fill="black", font=mono_font)
-
-        buf = BytesIO()
-        # Save as PDF (PIL can save image as a single-page PDF)
-        img.save(buf, format="PDF", resolution=100.0)
-        buf.seek(0)
-        return buf
-
-    pdf_buf = None
-    if st.button("Export PDF Report (Professional)"):
-        try:
-            pdf_buf = create_professional_pdf()
-            st.success("PDF Generated — click Download below.")
-            st.download_button("Download Financial Report (PDF)", data=pdf_buf, file_name="financial_report.pdf", mime="application/pdf")
-        except Exception as e:
-            st.error(f"Failed to generate PDF: {e}")
 
     st.markdown("---")
     st.caption("© 2025 Your Personal Financial Advisor - Made with Abdul-Hanan in Pakistan")
@@ -463,7 +329,7 @@ elif st.session_state["page"] == "insights":
     ideal_required = monthly_expenses * 6
     raw_progress = (current_savings / required * 100) if required > 0 else 0
     progress = min(max(raw_progress, 0), 100)
-    months_covered = (current_savings / monthly_expenses) if monthly_expenses > 0 else 0
+    months_covered = current_savings / monthly_expenses if monthly_expenses > 0 else 0
     shortfall = max(0, required - current_savings)
 
     # Gauge Logic + suggestion text (ensure suggestion is always defined)
@@ -610,37 +476,7 @@ elif st.session_state["page"] == "insights":
 
     st.markdown("<br><br>", unsafe_allow_html=True)
 
-    # ---------- NEW: Risk Level Score (fixed & improved logic) ----------
-    # compute normalized, explainable risk
-    try:
-        debt_norm = total_debt / (total_debt + current_savings + 1) if (total_debt + current_savings) > 0 else 0
-        expense_norm = monthly_expenses / (monthly_income + 1) if monthly_income > 0 else 0
-        risk_score = int(min(max((debt_norm * 0.6 + expense_norm * 0.4) * 100, 0), 100))
-    except Exception:
-        risk_score = 50
 
-    risk_level = "Low" if risk_score < 30 else ("Moderate" if risk_score < 65 else "High")
-
-    st.markdown(f"""
-        <div style='background:rgba(255,255,255,0.06); padding:18px; border-radius:12px; 
-             border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center;'>
-            <div style='flex:1;'>
-                <div style='font-size:15px; color:#c7d2fe; font-weight:800;'>Risk Level Score</div>
-                <div style='font-size:28px; color:white; font-weight:900;'>{risk_score}/100 • {risk_level}</div>
-                <div style='color:#dbeafe; margin-top:8px;'>This score considers debt, net worth and monthly flow. A higher score means more financial stress.</div>
-            </div>
-            <div style='width:180px; text-align:center;'>
-                <div style='background:rgba(255,255,255,0.08); padding:10px; border-radius:8px;'>
-                    <div style='font-size:13px; color:#c7d2fe;'>Quick Advice</div>
-                    <div style='color:white; font-weight:700; margin-top:6px;'>
-                        { 'Focus on saving & debt paydown' if risk_score>=50 else 'Keep up the good work' }
-                    </div>
-                </div>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<br><br>", unsafe_allow_html=True)
 
 # ---------------- PAGE: VISUALS ----------------
 elif st.session_state["page"] == "visuals":
@@ -651,76 +487,34 @@ elif st.session_state["page"] == "visuals":
     import numpy as np
 
     st.markdown("<h2 class='neon-title' style='text-align:center;'>Advanced Financial Visuals</h2>", unsafe_allow_html=True)
-    # removed empty decorative top bar per your request (Option A)
     st.markdown("<p style='text-align:center; margin-top:-10px;'>Breakdowns | Trend | Goal </p>", unsafe_allow_html=True)
 
     # ---------- DATA PREP ----------
     categories = ["Food", "Transport", "Bills", "Shopping", "Other"]
-    # ensure spending distribution is meaningful even when monthly_expenses == 0
-    if monthly_expenses <= 0:
-        spending = [0, 0, 0, 0, 0]
-    else:
-        spending = [
-            monthly_expenses * 0.25,
-            monthly_expenses * 0.15,
-            monthly_expenses * 0.30,
-            monthly_expenses * 0.20,
-            monthly_expenses * 0.10,
-        ]
+    spending = [
+        monthly_expenses * 0.25,
+        monthly_expenses * 0.15,
+        monthly_expenses * 0.30,
+        monthly_expenses * 0.20,
+        monthly_expenses * 0.10,
+    ]
     df = pd.DataFrame({"Category": categories, "Amount": spending})
 
-    # Monthly trend (use deterministic fallback when monthly values are zero)
+    # Monthly trend
     trend_months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
-    if monthly_income == 0:
-        incomes = np.zeros(6, dtype=int)
-    else:
-        incomes = np.random.randint(int(monthly_income*0.8), int(monthly_income*1.1)+1, 6)
-    if monthly_expenses == 0:
-        expenses_arr = np.zeros(6, dtype=int)
-    else:
-        expenses_arr = np.random.randint(int(monthly_expenses*0.9), int(monthly_expenses*1.2)+1, 6)
-
     df_trend = pd.DataFrame({
         "Month": trend_months,
-        "Income": incomes,
-        "Expenses": expenses_arr
+        "Income": np.random.randint(monthly_income*0.8, monthly_income*1.1, 6),
+        "Expenses": np.random.randint(monthly_expenses*0.9, monthly_expenses*1.2, 6)
     })
 
     # Heatmap Data
     heatmap_data = np.random.randint(2000, 9000, (6, 5))
 
-    # ---------- ROW: Top Info Boxes (Income & Expenses) ----------
-    top1, top2, top3 = st.columns([1,1,2])
-    top1.markdown(f"""
-        <div style="background:rgba(255,255,255,0.06); padding:18px; border-radius:12px; text-align:center; border:1px solid rgba(255,255,255,0.08);">
-            <div style='color:#c7d2fe; font-size:14px; font-weight:800;'>Income</div>
-            <div style='color:white; font-size:26px; font-weight:900;'>Rs {monthly_income:,}</div>
-            <div style='color:#dbeafe; font-size:12px; margin-top:6px;'>Monthly</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    top2.markdown(f"""
-        <div style="background:rgba(255,255,255,0.06); padding:18px; border-radius:12px; text-align:center; border:1px solid rgba(255,255,255,0.08);">
-            <div style='color:#c7d2fe; font-size:14px; font-weight:800;'>Expenses</div>
-            <div style='color:white; font-size:26px; font-weight:900;'>Rs {monthly_expenses:,}</div>
-            <div style='color:#dbeafe; font-size:12px; margin-top:6px;'>Monthly</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    top3.markdown(f"""
-        <div style="background:rgba(255,255,255,0.04); padding:18px; border-radius:12px; text-align:left; border:1px solid rgba(255,255,255,0.06);">
-            <div style='color:#c7d2fe; font-size:14px; font-weight:800;'>Note</div>
-            <div style='color:white; font-size:13px; margin-top:6px;'>These cards reflect current monthly totals — enter values in the sidebar to update charts below.</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # ---------- ROW 1: Pie Chart (Animated) - title INSIDE card ----------
+    # ---------- ROW 1: Pie Chart (Animated) ----------
     fig_pie = px.pie(df, names="Category", values="Amount",
                      color_discrete_sequence=px.colors.sequential.Purples)
-    # show label + percent clearly and ensure texts are white
-    fig_pie.update_traces(textinfo="label+percent", pull=0.08, textposition="outside")
+    fig_pie.update_traces(textinfo="percent+label", pull=0.08)
     fig_pie.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         font_color='white',
@@ -728,28 +522,24 @@ elif st.session_state["page"] == "visuals":
     )
 
     st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
-    st.markdown("<div style='display:flex; align-items:center; margin-bottom:6px;'><div style=""" + "'font-size:18px; font-weight:800; color:#c7d2fe; margin-right:10px;'" + "">💠</div><div style='font-size:20px; font-weight:800; color:white;'>Spending Breakdown</div></div>", unsafe_allow_html=True)
+    st.subheader("💠 Spending Breakdown")
     st.plotly_chart(fig_pie, use_container_width=True)
     st.markdown("</div><br>", unsafe_allow_html=True)
 
-    # ---------- ROW 2: Line Chart (Animated Smooth Curve) & Gauge (titles INSIDE cards) ----------
+    # ---------- ROW 2: Line Chart (Animated Smooth Curve) ----------
     fig_line = go.Figure()
     fig_line.add_trace(go.Scatter(
         x=df_trend["Month"],
         y=df_trend["Income"],
-        mode="lines+markers+text",
+        mode="lines+markers",
         name="Income",
-        text=[f"Rs {int(v):,}" for v in df_trend["Income"]],
-        textposition="top center",
         line=dict(color="#10b981", width=4),
     ))
     fig_line.add_trace(go.Scatter(
         x=df_trend["Month"],
         y=df_trend["Expenses"],
-        mode="lines+markers+text",
+        mode="lines+markers",
         name="Expenses",
-        text=[f"Rs {int(v):,}" for v in df_trend["Expenses"]],
-        textposition="bottom center",
         line=dict(color="#ef4444", width=4),
     ))
     fig_line.update_layout(
@@ -757,20 +547,18 @@ elif st.session_state["page"] == "visuals":
         plot_bgcolor="rgba(255,255,255,0.05)",
         font_color="white",
         xaxis_title=None,
-        yaxis_title="Amount (PKR)",
-        yaxis=dict(color="white"),
-        xaxis=dict(color="white")
+        yaxis_title=None
     )
 
     a, b = st.columns(2)
 
     with a:
         st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
-        st.markdown("<div style='display:flex; align-items:center; margin-bottom:6px;'><div style=""" + "'font-size:18px; font-weight:800; color:#c7d2fe; margin-right:10px;'" + "">📈</div><div style='font-size:20px; font-weight:800; color:white;'>Monthly Trend</div></div>", unsafe_allow_html=True)
+        st.subheader("📊 Monthly Trend")
         st.plotly_chart(fig_line, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ---------- ROW 2 (Right): Circular Gauge (title inside card) ----------
+    # ---------- ROW 2 (Right): Circular Gauge ----------
     goal_figure = go.Figure(go.Indicator(
         mode="gauge+number",
         value=goal_progress,
@@ -788,54 +576,9 @@ elif st.session_state["page"] == "visuals":
 
     with b:
         st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
-        st.markdown("<div style='display:flex; align-items:center; margin-bottom:6px;'><div style=""" + "'font-size:18px; font-weight:800; color:#c7d2fe; margin-right:10px;'" + "">🎯</div><div style='font-size:20px; font-weight:800; color:white;'>Goal Completion</div></div>", unsafe_allow_html=True)
+        st.subheader("🎯 Goal Completion")
         st.plotly_chart(goal_figure, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-
-    # ---------- PDF Export for Visuals: improved layout ----------
-    def create_quick_visuals_pdf():
-        # A short PDF capturing main visuals summary (improved formatting)
-        W, H = 1240, 1754
-        margin = 60
-        img = Image.new("RGB", (W, H), "white")
-        draw = ImageDraw.Draw(img)
-        try:
-            header_font = ImageFont.truetype("DejaVuSans-Bold.ttf", 36)
-            mono_font = ImageFont.truetype("DejaVuSans.ttf", 18)
-        except Exception:
-            header_font = ImageFont.load_default()
-            mono_font = ImageFont.load_default()
-
-        y = margin
-        draw.text((margin, y), "Visuals Snapshot — Financial Report", fill="black", font=header_font)
-        y += 56
-        draw.text((margin, y), f"Income: Rs {monthly_income:,} • Expenses: Rs {monthly_expenses:,}", fill="black", font=mono_font)
-        y += 30
-        draw.text((margin, y), f"Top categories (Amounts):", fill="black", font=mono_font)
-        y += 26
-        for idx, row in df.iterrows():
-            draw.text((margin+18, y), f"{row['Category']}: Rs {int(row['Amount']):,}", fill="black", font=mono_font)
-            y += 22
-
-        # Add small risk line
-        y += 8
-        draw.text((margin, y), f"Risk Score: {risk_score}/100 • {risk_level}", fill="black", font=mono_font)
-
-        buf = BytesIO()
-        img.save(buf, format="PDF", resolution=100.0)
-        buf.seek(0)
-        return buf
-
-    if st.button("Export Quick Visuals PDF"):
-        try:
-            buf = create_quick_visuals_pdf()
-            st.success("Visuals PDF ready.")
-            st.download_button("Download Visuals Snapshot (PDF)", data=buf, file_name="visuals_snapshot.pdf", mime="application/pdf")
-        except Exception as e:
-            st.error(f"PDF export failed: {e}")
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
 # ========================= END =========================
