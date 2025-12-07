@@ -5,7 +5,7 @@ import plotly.express as px
 import pandas as pd
 
 # ---------------- Page config ----------------
-st.set_page_config(page_title="Your Financial Advisor — Smart", page_icon="trophy", layout="wide")
+st.set_page_config(page_title="Your Financial Advisor — Smart AI", page_icon="trophy", layout="wide")
 
 
 # ==================== DARK NEON MODE GLOBAL STYLING ====================
@@ -142,18 +142,18 @@ st.markdown("""
 
 # ========================= SIDEBAR =========================
 with st.sidebar:
-    st.markdown("<h2 style='color:#6CE0AC; text-align:center;'>Apki Financial Inputs</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#6CE0AC; text-align:center;'>Your Financial Inputs</h2>", unsafe_allow_html=True)
     st.markdown("<div class='input-section'>", unsafe_allow_html=True)
-    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0, value=85000, step=1000)
-    monthly_expenses = st.number_input("Monthly Expenses (PKR)", min_value=0, value=55000, step=1000)
-    current_savings = st.number_input("Current Savings (PKR)", min_value=0, value=150000, step=5000)
-    total_debt = st.number_input("Total Debt (PKR)", min_value=0, value=0, step=1000)
-    current_investments = st.number_input("Current Investments (PKR)", min_value=0, value=50000, step=1000)
+    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0, value=00, step=1000)
+    monthly_expenses = st.number_input("Monthly Expenses (PKR)", min_value=0, value=00, step=1000)
+    current_savings = st.number_input("Current Savings (PKR)", min_value=0, value=00, step=5000)
+    total_debt = st.number_input("Total Debt (PKR)", min_value=0, value=00, step=1000)
+    current_investments = st.number_input("Current Investments (PKR)", min_value=0, value=00, step=1000)
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("---")
-    goal_name = st.text_input("Goal Name", value="Dream House")
-    goal_amount = st.number_input("Goal Target Amount (PKR)", min_value=1, value=5000000, step=50000)
+    goal_name = st.text_input("Goal Name (Car 🚙 , House 🏡 etc..")
+    goal_amount = st.number_input("Goal Target Amount (PKR)", min_value=1, value=00, step=50000)
 
     if st.button("Analyze / Predict", type="primary", use_container_width=True):
         st.success("Analysis Updated!")
@@ -170,7 +170,7 @@ remaining = max(0, goal_amount - current_savings)
 # ========================= SMART RECOMMENDATION + CELEBRATION =========================
 if goal_progress >= 100:
     rec_color = "rec-celebrate"
-    rec_msg = "GOAL ACHIEVED!<br><b>Mubarak ho bhai!</b><br>Aap ne kar dikhaya! Ab naya bada goal set karen"
+    rec_msg = "GOAL ACHIEVED!<br><b>Congrats You!</b><br>Aap ne kar dikhaya! Ab new big goal set karain"
 elif goal_progress < 50:
     rec_color = "rec-red"
     rec_msg = "Goal bohot door hai!<br><b>Action:</b> Har cheez se 15% cut karen<br><b>Extra:</b> Side income start karen"
@@ -317,14 +317,14 @@ if st.session_state["page"] == "overview":
     st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("---")
-    st.caption("© 2025 Your Personal Financial Advisor - Made with love in Pakistan")
+    st.caption("© 2025 Your Personal Financial Advisor - Made with Hanan in Pakistan")
 
 # ---------------- PAGE: INSIGHTS ----------------
 elif st.session_state["page"] == "insights":
 
     # Page Title
     st.markdown("<h2 style='text-align:center; color:#6CE0AC; margin-bottom:0;'>AI Insights</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; color:#dbeafe; margin-top:-8px; font-size:17px;'>Your smart emergency readiness overview</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#dbeafe; margin-top:-8px; font-size:17px;'>Emergency readiness overview</p>", unsafe_allow_html=True)
 
     # Calculations
     required = monthly_expenses * 3
@@ -346,7 +346,7 @@ elif st.session_state["page"] == "insights":
     else:
         gauge_color = "#10b981"
         text_status = "Good"
-        suggestion = "Shabash! Emergency fund nearly/fully complete — keep it isolated for real emergencies."
+        suggestion = "Excellent! Emergency fund nearly/fully complete — keep it isolated for real emergencies."
 
     angle = progress * 3.6
 
@@ -489,7 +489,7 @@ elif st.session_state["page"] == "visuals":
     import numpy as np
 
     st.markdown("<h2 class='neon-title' style='text-align:center;'>Advanced Financial Visuals</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; margin-top:-10px;'>Interactive | Neon Mode | Smooth Animations</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; margin-top:-10px;'>Breakdowns | Trends | Goal</p>", unsafe_allow_html=True)
 
     # ---------- DATA PREP ----------
     categories = ["Food", "Transport", "Bills", "Shopping", "Other"]
@@ -569,7 +569,7 @@ elif st.session_state["page"] == "visuals":
             "bar": {"color": "#8b5cf6"},
             "bgcolor": "rgba(255,255,255,0.07)",
             "borderwidth": 2,
-            "bordercolor": "white",
+            "bordercolor": "pink",
         },
         number={'suffix': "%"},
         domain={"x": [0, 1], "y": [0, 1]}
@@ -583,26 +583,6 @@ elif st.session_state["page"] == "visuals":
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-
-    # ---------- ROW 3: Spending Heatmap ----------
-    fig_heat = px.imshow(
-        heatmap_data,
-        labels=dict(x="Category", y="Month", color="Rs"),
-        x=categories,
-        y=trend_months,
-        color_continuous_scale="Viridis"
-    )
-    fig_heat.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)",
-        font_color="white"
-    )
-
-    st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
-    st.subheader("🔥 Spending Heatmap (6 Months)")
-    st.plotly_chart(fig_heat, use_container_width=True)
-    st.markdown("</div>", unsafe_allow_html=True)
-
-
-
 # ========================= END =========================
+
 
