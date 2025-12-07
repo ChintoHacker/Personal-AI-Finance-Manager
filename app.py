@@ -6,25 +6,23 @@ import pandas as pd
 
 st.set_page_config(page_title="Your Financial Advisor — Smart", page_icon="rocket", layout="wide")
 
-# ========================= LOGIN SYSTEM =========================
+# ========================= LOGIN =========================
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
     st.markdown("<h1 style='text-align:center; color:#6CE0AC;'>Smart Financial Advisor</h1>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align:center; color:white;'>Login Required</h3>", unsafe_allow_html=True)
-    
     col1, col2, col3 = st.columns([1,1,1])
     with col2:
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
         if st.button("Login", use_container_width=True):
-            if username == "admin" and password == "123":  # Change to your credentials
+            if username == "admin" and password == "123":
                 st.session_state.logged_in = True
-                st.success("Login Successful!")
+                st.success("Welcome back!")
                 st.rerun()
             else:
-                st.error("Invalid Credentials")
+                st.error("Wrong credentials")
     st.stop()
 
 # ========================= THEME TOGGLE =========================
@@ -34,19 +32,10 @@ if "theme" not in st.session_state:
 def switch_theme():
     st.session_state.theme = "light" if st.session_state.theme == "dark" else "dark"
 
-# ========================= CSS (Improved Recommendation & Plans Style) =========================
-dark_css = """
-background: linear-gradient(180deg, #224B7D 0%, #6C9E7F 100%);
-color: white;
-"""
-light_css = """
-background: #f8fafc;
-color: #1e293b;
-"""
-
+# ========================= CSS (FINAL PREMIUM) =========================
 st.markdown(f"""
 <style>
-    .stApp {{ {dark_css if st.session_state.theme == "dark" else light_css} font-family: 'Inter', sans-serif; }}
+    .stApp {{ background: linear-gradient(180deg, #224B7D 0%, #6C9E7F 100%); font-family: 'Inter', sans-serif; }}
     .app-title {{ font-size: 42px !important; font-weight: 900 !important; color: #6CE0AC !important; text-align: center; }}
     .overview-card {{
         background: rgba(255,255,255,0.16); backdrop-filter: blur(14px); border-radius: 22px;
@@ -54,7 +43,7 @@ st.markdown(f"""
         box-shadow: 0 10px 32px rgba(0,0,0,0.45); height: 155px; transition: 0.3s;
     }}
     .overview-card:hover {{ transform: translateY(-10px); }}
-    .card-label {{ font-size: 16px; color: {'#E0E7FF' if st.session_state.theme=='dark' else '#64748b'}; font-weight: 600; }}
+    .card-label {{ font-size: 16px; color: #E0E7FF; font-weight: 600; }}
     .card-value {{ font-size: 30px; font-weight: 900; color: white; }}
     .goal-box {{
         background: rgba(255,255,255,0.17); backdrop-filter: blur(14px); border-radius: 25px;
@@ -63,21 +52,20 @@ st.markdown(f"""
     }}
     .goal-bar {{ height: 38px; background: rgba(255,255,255,0.22); border-radius: 20px; overflow: hidden; margin: 22px 0; }}
     .goal-fill {{ height: 100%; background: linear-gradient(90deg, #8b5cf6, #ec4899); }}
-    .rec-red    {{ background: linear-gradient(135deg, rgba(239,68,68,0.45), rgba(239,68,68,0.2)); border-left: 8px solid #f87171; color: #fee2e2; }}
-    .rec-orange {{ background: linear-gradient(135deg, rgba(251,146,60,0.45), rgba(251,146,60,0.2)); border-left: 8px solid #fb923c; color: #fff7ed; }}
-    .rec-green  {{ background: linear-gradient(135deg, rgba(34,197,94,0.45), rgba(34,197,94,0.2)); border-left: 8px solid #4ade80; color: #f0fdf4; }}
+    .rec-red    {{ background: linear-gradient(135deg, rgba(239,68,68,0.5), rgba(239,68,68,0.2)); border-left: 8px solid #f87171; color: #fee2e2; }}
+    .rec-orange {{ background: linear-gradient(135deg, rgba(251,146,60,0.5), rgba(251,146,60,0.2)); border-left: 8px solid #fb923c; color: #fff7ed; }}
+    .rec-green  {{ background: linear-gradient(135deg, rgba(34,197,94,0.5), rgba(34,197,94,0.2)); border-left: 8px solid #4ade80; color: #f0fdf4; }}
     .rec-message {{
-        font-size: 20px; font-weight: 700; line-height: 1.5; padding: 26px; border-radius: 22px;
-        backdrop-filter: blur(14px); box-shadow: 0 12px 36px rgba(0,0,0,0.6); margin-top: 20px;
+        font-size: 20px; font-weight: 700; line-height: 1.6; padding: 28px; border-radius: 24px;
+        backdrop-filter: blur(14px); box-shadow: 0 12px 40px rgba(0,0,0,0.6); margin-top: 20px;
         transition: transform 0.3s; animation: fadeIn 1s;
     }}
     .rec-message:hover {{ transform: scale(1.03); }}
-    .plan-box {{
-        background: rgba(255,255,255,0.12); border-radius: 18px; padding: 18px; margin-top: 15px;
-        font-size: 18px; font-weight: 600; line-height: 1.6; box-shadow: 0 8px 28px rgba(0,0,0,0.5);
-        transition: 0.3s;
+    .plan-card {{
+        background: rgba(255,255,255,0.15); border-radius: 20px; padding: 22px; text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.3s; height: 140px;
     }}
-    .plan-box:hover {{ transform: scale(1.02); }}
+    .plan-card:hover {{ transform: translateY(-8px); }}
     .stSidebar {{ background: #2D3452 !important; }}
     .stSidebar label {{ color: #F1F5F9 !important; font-weight: 700; font-size: 17px !important; }}
     .input-section {{ background: rgba(255,255,255,0.12); border-radius: 18px; padding: 20px; border: 1px solid rgba(255,255,255,0.22); margin: 10px 0; }}
@@ -116,25 +104,35 @@ monthly_save = max(0, monthly_income - monthly_expenses)
 goal_progress = min(100.0, (current_savings / goal_amount * 100) if goal_amount > 0 else 0)
 months_needed = "N/A" if monthly_save <= 0 else max(0, round((goal_amount - current_savings) / monthly_save))
 
-savings_rate = (monthly_save / monthly_income * 100) if monthly_income > 0 else 0
+# Remaining amount to goal
+remaining = max(0, goal_amount - current_savings)
+
+# SMART PLANS — Ab har situation mein different!
+if goal_progress < 50:
+    basic_save = max(monthly_save, monthly_income * 0.20)
+    strong_save = max(monthly_save, monthly_income * 0.35)
+    basic_time = "N/A" if basic_save <= 0 else round(remaining / basic_save)
+    strong_time = "N/A" if strong_save <= 0 else round(remaining / strong_save)
+    show_plans = True
+elif goal_progress < 80:
+    basic_save = max(monthly_save, monthly_income * 0.15)
+    strong_save = max(monthly_save, monthly_income * 0.25)
+    basic_time = "N/A" if basic_save <= 0 else round(remaining / basic_save)
+    strong_time = "N/A" if strong_save <= 0 else round(remaining / strong_save)
+    show_plans = True
+else:
+    show_plans = False
 
 # Improved Recommendation
 if goal_progress < 50:
     rec_color = "rec-red"
-    rec_msg = "Goal peeche hai! <br><b>Improve:</b> Savings badhaen & expenses cut karen <br><b>Avoid:</b> Dining out, unnecessary buys"
-elif goal_progress < 90:
+    rec_msg = "Goal bohot door hai!<br><b>Action:</b> Har cheez se 10-15% cut karen<br><b>Focus:</b> Extra income source shuru karen"
+elif goal_progress < 80:
     rec_color = "rec-orange"
-    rec_msg = "Progress achha hai! <br><b>Improve:</b> Auto-save start karen & budget track karen <br><b>Avoid:</b> Impulse shopping, subscriptions"
+    rec_msg = "Achha ja rahe hain!<br><b>Next Step:</b> Budget strictly follow karen<br><b>Pro Tip:</b> Auto-invest on karen"
 else:
     rec_color = "rec-green"
-    rec_msg = "Goal ke qareeb! <br><b>Improve:</b> Investments explore karen <br><b>Avoid:</b> Risky spends, celebrate wisely!"
-
-# Situation-based Plans (Only if progress < 80)
-basic_plan_save = max(monthly_save, monthly_income * 0.2)
-basic_plan_time = "N/A" if basic_plan_save <= 0 else round((goal_amount - current_savings) / basic_plan_save)
-strong_plan_save = max(monthly_save, monthly_income * 0.3)
-strong_plan_time = "N/A" if strong_plan_save <= 0 else round((goal_amount - current_savings) / strong_plan_save)
-show_plans = goal_progress < 80
+    rec_msg = "Goal qareeb hai!<br><b>Congrats!</b> Aap shandar kar rahe hain<br><b>Next:</b> Naya bada goal set karen"
 
 # ========================= HEADER =========================
 st.markdown("<h1 class='app-title'>Your Personal Financial Advisor — Smart</h1>", unsafe_allow_html=True)
@@ -157,8 +155,8 @@ for col, (label, val) in zip(cols, cards):
 
 st.markdown("<br><br>", unsafe_allow_html=True)
 
-# ========================= GOAL SECTION (with Heading & Plans) =========================
-st.markdown("<h3 style='text-align:center; color:white; margin-bottom:30px;'>Goal Progress & Plans</h3>", unsafe_allow_html=True)
+# ========================= GOAL SECTION =========================
+st.markdown("<h3 style='text-align:center; color:white; margin-bottom:30px;'>Goal Progress & Smart Plans</h3>", unsafe_allow_html=True)
 
 st.markdown(f"""
 <div class='goal-box'>
@@ -169,7 +167,7 @@ st.markdown(f"""
         <div class='goal-fill' style='width:{goal_progress}%'></div>
     </div>
     <div style='color:#E0E7FF; font-size:18px; font-weight:600; margin:16px 0;'>
-        {goal_progress:.1f}% Complete • ETA: {months_needed} months
+        {goal_progress:.1f}% Complete • Current ETA: {months_needed} months
     </div>
     <div class='rec-message {rec_color}'>
         {rec_msg}
@@ -177,42 +175,51 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# ========================= SMART PLANS (Only when needed) =========================
 if show_plans:
     st.markdown("<h4 style='text-align:center; color:white; margin-top:40px;'>Personalized Savings Plans</h4>", unsafe_allow_html=True)
-    plan1, plan2 = st.columns(2)
-    with plan1:
+    p1, p2 = st.columns(2)
+    with p1:
         st.markdown(f"""
-        <div class='plan-box' style='background:rgba(255,255,255,0.12); color:white;'>
-            <b>Basic Plan</b> (20% Savings)<br>
-            Save Rs {int(basic_plan_save):,}/month<br>
-            Estimated Time: {basic_plan_time} months
+        <div class='plan-card'>
+            <b>Basic Plan</b><br>
+            Save <b>Rs {int(basic_save):,}/month</b><br>
+            <span style='color:#a0d9ff;'>Estimated Time: {basic_time} months</span>
         </div>
         """, unsafe_allow_html=True)
-    with plan2:
+    with p2:
         st.markdown(f"""
-        <div class='plan-box' style='background:rgba(255,255,255,0.12); color:white;'>
-            <b>Strong Plan</b> (30% Savings)<br>
-            Save Rs {int(strong_plan_save):,}/month<br>
-            Estimated Time: {strong_plan_time} months
+        <div class='plan-card'>
+            <b>Strong Plan</b><br>
+            Save <b>Rs {int(strong_save):,}/month</b><br>
+            <span style='color:#a0d9ff;'>Estimated Time: {strong_time} months</span>
         </div>
         """, unsafe_allow_html=True)
 
 st.markdown("<br><br>", unsafe_allow_html=True)
 
-# ========================= IMPROVED CHART (Clear Labels & Text) =========================
-st.markdown("<h3 style='text-align:center; color:white;'>Financial Overview Chart</h3>", unsafe_allow_html=True)
+# ========================= FINAL PERFECT CHART (Labels 100% Visible) =========================
+st.markdown("<h3 style='text-align:center; color:white;'>Financial Overview</h3>", unsafe_allow_html=True)
 chart_data = pd.DataFrame({
     "Category": ["Income", "Expenses", "Savings", "Investments"],
-    "Amount (PKR)": [monthly_income, monthly_expenses, current_savings, current_investments]
+    "Amount": [monthly_income, monthly_expenses, current_savings, current_investments]
 })
-fig = px.bar(chart_data, x="Category", y="Amount (PKR)", color="Category", text="Amount (PKR)",
+fig = px.bar(chart_data, x="Category", y="Amount", color="Category",
+             text=chart_data["Amount"].apply(lambda x: f"Rs {x:,}"),
              color_discrete_sequence=["#8b5cf6", "#ef4444", "#10b981", "#f59e0b"])
-fig.update_traces(textfont_size=18, textangle=0, textposition="outside", cliponaxis=False, textfont_color="white")
-fig.update_layout(showlegend=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', height=450,
-                  font=dict(color="white", size=16), yaxis_gridcolor="rgba(255,255,255,0.2)")
+fig.update_traces(textposition='outside', textfont_size=16, textfont_color="white")
+fig.update_layout(
+    showlegend=False,
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    height=500,
+    font=dict(color="white", size=16),
+    yaxis=dict(showgrid=False, title="Amount (PKR)", color="white"),
+    xaxis=dict(color="white")
+)
 st.plotly_chart(fig, use_container_width=True)
 
-st.markdown("<div style='text-align:center; background:rgba(255,255,255,0.12); padding:20px; border-radius:18px; color:#E0E7FF; font-size:17px;'>Inputs change karne ke baad 'Analyze / Predict' zaroor dabana!</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align:center; background:rgba(255,255,255,0.12); padding:20px; border-radius:18px; color:#E0E7FF; font-size:17px;'>Tip: Inputs change karen? → 'Analyze / Predict' dabana na bhoolen!</div>", unsafe_allow_html=True)
 
 st.markdown("---")
 st.caption("© 2025 Your Personal Financial Advisor - Made with love in Pakistan")
