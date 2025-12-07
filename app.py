@@ -480,7 +480,7 @@ elif st.session_state["page"] == "insights":
 
 
 # ---------------- PAGE: VISUALS ----------------
-# --------------------- ADVANCED VISUALS PAGE (NEON + A.I. LOOK) ---------------------
+# --------------------- IMPROVED VISUALS PAGE (NO HEATMAP + CLEAN + PREMIUM) ---------------------
 elif st.session_state["page"] == "visuals":
 
     import plotly.express as px
@@ -488,8 +488,13 @@ elif st.session_state["page"] == "visuals":
     import pandas as pd
     import numpy as np
 
-    st.markdown("<h2 class='neon-title' style='text-align:center;'>Advanced Financial Visuals</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; margin-top:-10px;'>Interactive | Neon Mode | Smooth Animations</p>", unsafe_allow_html=True)
+    st.markdown("""
+        <h2 class='neon-title' style='text-align:center;'>Visuals Dashboard</h2>
+        <p style='text-align:center; margin-top:-10px; color:#dbeafe; font-size:17px;'>
+            Clean • Modern • Easy to Understand
+        </p>
+        <br>
+    """, unsafe_allow_html=True)
 
     # ---------- DATA PREP ----------
     categories = ["Food", "Transport", "Bills", "Shopping", "Other"]
@@ -502,7 +507,6 @@ elif st.session_state["page"] == "visuals":
     ]
     df = pd.DataFrame({"Category": categories, "Amount": spending})
 
-    # Monthly trend
     trend_months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
     df_trend = pd.DataFrame({
         "Month": trend_months,
@@ -510,101 +514,105 @@ elif st.session_state["page"] == "visuals":
         "Expenses": np.random.randint(monthly_expenses*0.9, monthly_expenses*1.2, 6)
     })
 
-    # Heatmap Data
-    heatmap_data = np.random.randint(2000, 9000, (6, 5))
+    # ----------  CARD STYLE ----------
+    card = """
+        background: rgba(255,255,255,0.06);
+        padding: 22px;
+        border-radius: 18px;
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.10);
+        box-shadow: 0 0 22px rgba(139, 92, 246, 0.35);
+        transition: 0.3s;
+    """
 
-    # ---------- ROW 1: Pie Chart (Animated) ----------
-    fig_pie = px.pie(df, names="Category", values="Amount",
-                     color_discrete_sequence=px.colors.sequential.Purples)
-    fig_pie.update_traces(textinfo="percent+label", pull=0.08)
+    # ===================== ROW 1 — PIE CHART =====================
+    fig_pie = px.pie(
+        df, 
+        names="Category", 
+        values="Amount",
+        color_discrete_sequence=px.colors.sequential.Purples_r
+    )
+    fig_pie.update_traces(textfont_size=14, pull=0.05)
     fig_pie.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        font_color='white',
-        legend=dict(orientation="h", y=-0.15)
+        paper_bgcolor="rgba(0,0,0,0)",
+        font_color="white",
+        legend=dict(orientation="h", y=-0.25, font=dict(size=14)),
+        margin=dict(t=20, b=10)
     )
 
-    st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
-    st.subheader("💠 Spending Breakdown")
+    st.markdown(f"<div style='{card}' class='fade'>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color:white; text-align:center; margin-top:0;'>💠 Spending Breakdown</h3>", unsafe_allow_html=True)
     st.plotly_chart(fig_pie, use_container_width=True)
     st.markdown("</div><br>", unsafe_allow_html=True)
 
-    # ---------- ROW 2: Line Chart (Animated Smooth Curve) ----------
+    # ===================== ROW 2 — LINE CHART + GAUGE =====================
+    col1, col2 = st.columns(2)
+
+    # --- Line Chart (Income vs Expenses) ---
     fig_line = go.Figure()
     fig_line.add_trace(go.Scatter(
         x=df_trend["Month"],
         y=df_trend["Income"],
         mode="lines+markers",
         name="Income",
-        line=dict(color="#10b981", width=4),
+        line=dict(color="#34d399", width=4),
+        marker=dict(size=9)
     ))
     fig_line.add_trace(go.Scatter(
         x=df_trend["Month"],
         y=df_trend["Expenses"],
         mode="lines+markers",
         name="Expenses",
-        line=dict(color="#ef4444", width=4),
+        line=dict(color="#f87171", width=4),
+        marker=dict(size=9)
     ))
+
     fig_line.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(255,255,255,0.05)",
         font_color="white",
-        xaxis_title=None,
-        yaxis_title=None
+        margin=dict(t=10, b=10, l=0, r=0),
+        xaxis=dict(title="Month", gridcolor="#ffffff15"),
+        yaxis=dict(title="Amount", gridcolor="#ffffff15")
     )
 
-    a, b = st.columns(2)
-
-    with a:
-        st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
-        st.subheader("📊 Monthly Trend")
+    with col1:
+        st.markdown(f"<div style='{card}' class='fade'>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:white; text-align:center;'>📉 Monthly Trend</h3>", unsafe_allow_html=True)
         st.plotly_chart(fig_line, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ---------- ROW 2 (Right): Circular Gauge ----------
-    goal_figure = go.Figure(go.Indicator(
+    # --- Circular Gauge (Goal Progress) ---
+    gauge = go.Figure(go.Indicator(
         mode="gauge+number",
         value=goal_progress,
+        number={'suffix': "%", "font": {"size": 36}},
         gauge={
             "axis": {"range": [0, 100]},
-            "bar": {"color": "#8b5cf6"},
-            "bgcolor": "rgba(255,255,255,0.07)",
+            "bar": {"color": "#a78bfa"},
+            "bgcolor": "rgba(255,255,255,0.1)",
             "borderwidth": 2,
             "bordercolor": "white",
-        },
-        number={'suffix': "%"},
-        domain={"x": [0, 1], "y": [0, 1]}
+            "steps": [
+                {"range": [0, 50], "color": "rgba(239,68,68,0.35)"},
+                {"range": [50, 80], "color": "rgba(245,158,11,0.35)"},
+                {"range": [80, 100], "color": "rgba(52,211,153,0.35)"},
+            ],
+        }
     ))
-    goal_figure.update_layout(paper_bgcolor="rgba(0,0,0,0)", font_color="white")
+    gauge.update_layout(paper_bgcolor="rgba(0,0,0,0)")
 
-    with b:
-        st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
-        st.subheader("🎯 Goal Completion")
-        st.plotly_chart(goal_figure, use_container_width=True)
+    with col2:
+        st.markdown(f"<div style='{card}' class='fade'>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:white; text-align:center;'>🎯 Goal Completion</h3>", unsafe_allow_html=True)
+        st.plotly_chart(gauge, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ---------- ROW 3: Spending Heatmap ----------
-    fig_heat = px.imshow(
-        heatmap_data,
-        labels=dict(x="Category", y="Month", color="Rs"),
-        x=categories,
-        y=trend_months,
-        color_continuous_scale="Viridis"
-    )
-    fig_heat.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)",
-        font_color="white"
-    )
-
-    st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
-    st.subheader("🔥 Spending Heatmap (6 Months)")
-    st.plotly_chart(fig_heat, use_container_width=True)
-    st.markdown("</div>", unsafe_allow_html=True)
-
-
 
 # ========================= END =========================
+
 
 
 
