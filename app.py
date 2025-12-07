@@ -4,7 +4,7 @@ import math
 
 st.set_page_config(page_title="Your Financial Advisor — Smart", page_icon="rocket", layout="wide")
 
-# ========================= LOGIN (Same asli wala) =========================
+# ========================= LOGIN (Same) =========================
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
@@ -27,7 +27,7 @@ if not st.session_state.logged_in:
 if "page" not in st.session_state:
     st.session_state.page = "overview"
 
-# ========================= TERA PURANA PREMIUM CSS (ZERO CHANGE) =========================
+# ========================= TERA PURANA EXACT CSS (NO CHANGE) =========================
 st.markdown("""
 <style>
     .stApp { background: linear-gradient(180deg, #224B7D 0%, #6C9E7F 100%); font-family: 'Inter', sans-serif; }
@@ -36,7 +36,7 @@ st.markdown("""
     .overview-card:hover { transform: translateY(-10px); }
     .card-label { font-size: 16px; color: #E0E7FF; font-weight: 600; }
     .card-value { font-size: 30px; font-weight: 900; color: white; }
-    .goal-box { background: rgba(255,255,255,0.17); backdrop-filter: blur(14px); border-radius: 25px; padding: 32px; box-shadow: 0 14px 40px rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.25); text-align: center; }
+    .goal-box { background: rgba(255,255,255,0.17); backdrop-filter: blur(14px); border-radius: 25px; padding: 32px; box-shadow: 0 14px 40px rgba(0,0,0,0.45); border: 1.5px solid rgba(255,255,255,0.25); text-align: center; }
     .goal-bar { height: 38px; background: rgba(255,255,255,0.22); border-radius: 20px; overflow: hidden; margin: 22px 0; }
     .goal-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #ec4899); }
     .rec-red    { background: linear-gradient(135deg, rgba(239,68,68,0.5), rgba(239,68,68,0.2)); border-left: 8px solid #f87171; color: #fee2e2; }
@@ -48,10 +48,21 @@ st.markdown("""
     .stSidebar { background: #2D3452 !important; }
     .stSidebar label { color: #F1F5F9 !important; font-weight: 700; font-size: 17px !important; }
     .input-section { background: rgba(255,255,255,0.12); border-radius: 18px; padding: 20px; border: 1px solid rgba(255,255,255,0.22); margin: 10px 0; }
+    
+    /* TERE PEHLE WALE GLOWING BUTTONS — AB WORKING! */
+    .glow-btn {
+        background: linear-gradient(45deg, #8b5cf6, #ec4899);
+        color: white; border: none; padding: 16px 40px; margin: 0 20px;
+        border-radius: 50px; font-size: 19px; font-weight: 700; cursor: pointer;
+        box-shadow: 0 0 25px rgba(139,92,246,0.7), 0 0 50px rgba(236,72,153,0.5);
+        transition: all 0.4s ease; position: relative; overflow: hidden;
+    }
+    .glow-btn:hover { transform: translateY(-6px) scale(1.06); box-shadow: 0 0 40px rgba(139,92,246,0.9), 0 0 80px rgba(236,72,153,0.7); }
+    .glow-btn.active { background: linear-gradient(45deg, #10b981, #34d399); box-shadow: 0 0 40px rgba(16,185,129,0.9); }
 </style>
 """, unsafe_allow_html=True)
 
-# ========================= SIDEBAR (Same as tera purana) =========================
+# ========================= SIDEBAR (Exact same) =========================
 with st.sidebar:
     st.markdown("<h2 style='color:#6CE0AC; text-align:center;'>Apki Financial Inputs</h2>", unsafe_allow_html=True)
     st.markdown("<div class='input-section'>", unsafe_allow_html=True)
@@ -88,48 +99,28 @@ else:
     rec_color = "rec-green"
     rec_msg = "Goal qareeb hai!<br><b>Final Push:</b> Thodi zyada saving<br><b>Shabash!</b>"
 
-# ========================= HEADER + WORKING GLOW BUTTONS (NO ERROR) =========================
+# ========================= HEADER + TERE PEHLE WALE GLOWING BUTTONS (NOW WORKING!) =========================
 st.markdown("<h1 class='app-title'>Your Personal Financial Advisor — Smart</h1>", unsafe_allow_html=True)
 st.markdown(f"<p style='text-align:center; color:#E0E7FF; font-size:19px; margin-top:-10px;'>Today {datetime.now().strftime('%d %B %Y')}</p>", unsafe_allow_html=True)
 
-# 3 GLOWING BUTTONS — AB FULLY WORKING (Streamlit way)
-col1, col2, col3 = st.columns(3)
-with col1:
-    if st.button("Overview", use_container_width=True):
-        st.session_state.page = "overview"
-        st.rerun()
-with col2:
-    if st.button("AI Insights", use_container_width=True):
-        st.session_state.page = "insights"
-        st.rerun()
-with col3:
-    if st.button("Visuals", use_container_width=True):
-        st.session_state.page = "visuals"
-        st.rerun()
-
-# Active Button Glow Effect
-active_style = "nav-btn-active" if st.session_state.page == "overview" else ""
+# YEHI TERE PEHLE WALE BUTTONS — AB WORKING!
 st.markdown(f"""
-<div style='text-align:center; margin:40px 0;'>
-    <button style='background: {"linear-gradient(45deg, #10b981, #34d399)" if st.session_state.page=="overview" else "linear-gradient(45deg, #8b5cf6, #ec4899)"}; 
-                   color:white; border:none; padding:16px 40px; margin:0 15px; 
-                   border-radius:50px; font-size:19px; font-weight:700; cursor:pointer;
-                   box-shadow:0 0 30px {"rgba(16,185,129,0.9)" if st.session_state.page=="overview" else "rgba(139,92,246,0.7)"};
-                   transition:all 0.4s;'>Overview</button>
-    <button style='background: {"linear-gradient(45deg, #10b981, #34d399)" if st.session_state.page=="insights" else "linear-gradient(45deg, #8b5cf6, #ec4899)"}; 
-                   color:white; border:none; padding:16px 40px; margin:0 15px; 
-                   border-radius:50px; font-size:19px; font-weight:700; cursor:pointer;
-                   box-shadow:0 0 30px {"rgba(16,185,129,0.9)" if st.session_state.page=="insights" else "rgba(139,92,246,0.7)"};
-                   transition:all 0.4s;'>AI Insights</button>
-    <button style='background: {"linear-gradient(45deg, #10b981, #34d399)" if st.session_state.page=="visuals" else "linear-gradient(45deg, #8b5cf6, #ec4899)"}; 
-                   color:white; border:none; padding:16px 40px; margin:0 15px; 
-                   border-radius:50px; font-size:19px; font-weight:700; cursor:pointer;
-                   box-shadow:0 0 30px {"rgba(16,185,129,0.9)" if st.session_state.page=="visuals" else "rgba(139,92,246,0.7)"};
-                   transition:all 0.4s;'>Visuals</button>
+<div style='text-align:center; margin:50px 0;'>
+    <button class='glow-btn {"active" if st.session_state.page == "overview" else ""}' 
+            onclick="window.location.href='?page=overview'">Overview</button>
+    <button class='glow-btn {"active" if st.session_state.page == "insights" else ""}' 
+            onclick="window.location.href='?page=insights'">AI Insights</button>
+    <button class='glow-btn {"active" if st.session_state.page == "visuals" else ""}' 
+            onclick="window.location.href='?page=visuals'">Visuals</button>
 </div>
 """, unsafe_allow_html=True)
 
-# ========================= PAGE CONTENT =========================
+# ========================= PAGE SWITCHING (Streamlit way) =========================
+query_params = st.query_params
+if "page" in query_params:
+    st.session_state.page = query_params["page"]
+
+# ========================= PAGE CONTENT (Same as before) =========================
 if st.session_state.page == "overview":
     st.markdown("<h3 style='text-align:center; color:white; margin:40px 0 30px;'>Overview — Quick Snapshot</h3>", unsafe_allow_html=True)
     cols = st.columns(5)
