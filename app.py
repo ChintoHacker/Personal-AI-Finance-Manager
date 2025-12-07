@@ -480,7 +480,7 @@ elif st.session_state["page"] == "insights":
 
 
 # ---------------- PAGE: VISUALS ----------------
-# --------------------- ADVANCED FIXED VISUALS PAGE (NO HEATMAP + CLEAR LABELS) ---------------------
+# --------------------- IMPROVED VISUALS PAGE (NO HEATMAP + CLEAN + PREMIUM) ---------------------
 elif st.session_state["page"] == "visuals":
 
     import plotly.express as px
@@ -491,7 +491,7 @@ elif st.session_state["page"] == "visuals":
     st.markdown("""
         <h2 class='neon-title' style='text-align:center;'>Visuals Dashboard</h2>
         <p style='text-align:center; margin-top:-10px; color:#dbeafe; font-size:17px;'>
-            Clean • Modern • Easy to Understand • Neon Styled
+            Clean • Modern • Easy to Understand
         </p>
         <br>
     """, unsafe_allow_html=True)
@@ -510,8 +510,8 @@ elif st.session_state["page"] == "visuals":
     trend_months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
     df_trend = pd.DataFrame({
         "Month": trend_months,
-        "Income": np.random.randint(int(monthly_income*0.8), int(monthly_income*1.1), 6),
-        "Expenses": np.random.randint(int(monthly_expenses*0.9), int(monthly_expenses*1.2), 6)
+        "Income": np.random.randint(monthly_income*0.8, monthly_income*1.1, 6),
+        "Expenses": np.random.randint(monthly_expenses*0.9, monthly_expenses*1.2, 6)
     })
 
     # ----------  CARD STYLE ----------
@@ -536,8 +536,8 @@ elif st.session_state["page"] == "visuals":
     fig_pie.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         font_color="white",
-        legend=dict(orientation="h", y=-0.3, font=dict(size=14)),
-        margin=dict(t=30, b=20)
+        legend=dict(orientation="h", y=-0.25, font=dict(size=14)),
+        margin=dict(t=20, b=10)
     )
 
     st.markdown(f"<div style='{card}' class='fade'>", unsafe_allow_html=True)
@@ -567,24 +567,13 @@ elif st.session_state["page"] == "visuals":
         marker=dict(size=9)
     ))
 
-    # ★ FIXED ERROR PART ★
     fig_line.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(255,255,255,0.05)",
         font_color="white",
-        margin=dict(t=20, b=20, l=20, r=20),
-
-        xaxis=dict(
-            title=dict(text="Month", font=dict(color="white", size=16)),
-            tickfont=dict(color="white", size=14),
-            gridcolor="#ffffff15"
-        ),
-
-        yaxis=dict(
-            title=dict(text="Amount (Rs)", font=dict(color="white", size=16)),
-            tickfont=dict(color="white", size=14),
-            gridcolor="#ffffff15"
-        )
+        margin=dict(t=10, b=10, l=0, r=0),
+        xaxis=dict(title="Month", gridcolor="#ffffff15"),
+        yaxis=dict(title="Amount", gridcolor="#ffffff15")
     )
 
     with col1:
@@ -601,7 +590,7 @@ elif st.session_state["page"] == "visuals":
         gauge={
             "axis": {"range": [0, 100]},
             "bar": {"color": "#a78bfa"},
-            "bgcolor": "rgba(255,255,255,0.08)",
+            "bgcolor": "rgba(255,255,255,0.1)",
             "borderwidth": 2,
             "bordercolor": "white",
             "steps": [
@@ -611,10 +600,7 @@ elif st.session_state["page"] == "visuals":
             ],
         }
     ))
-    gauge.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)",
-        margin=dict(t=20, b=20)
-    )
+    gauge.update_layout(paper_bgcolor="rgba(0,0,0,0)")
 
     with col2:
         st.markdown(f"<div style='{card}' class='fade'>", unsafe_allow_html=True)
@@ -625,6 +611,7 @@ elif st.session_state["page"] == "visuals":
     st.markdown("<br>", unsafe_allow_html=True)
 
 # ========================= END =========================
+
 
 
 
