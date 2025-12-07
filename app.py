@@ -142,15 +142,15 @@ st.markdown("""
 with st.sidebar:
     st.markdown("<h2 style='color:#6CE0AC; text-align:center;'>Your Financial Inputs</h2>", unsafe_allow_html=True)
     st.markdown("<div class='input-section'>", unsafe_allow_html=True)
-    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0)
+    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0, value=60000, step=1000)
     monthly_expenses = st.number_input("Monthly Expenses (PKR)", min_value=0, value=55000, step=1000)
     current_savings = st.number_input("Current Savings (PKR)", min_value=0, value=150000, step=5000)
     total_debt = st.number_input("Total Debt (PKR)", min_value=0, value=0, step=1000)
     current_investments = st.number_input("Current Investments (PKR)", min_value=0, value=50000, step=1000)
     st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("---")
-    goal_name = st.text_input("Goal Name", value="Dream House")
+    st.markdown("Goal:")
+    goal_name = st.text_input("Goal Name(car 🚙, house 🏡 etc..)")
     goal_amount = st.number_input("Goal Target Amount (PKR)", min_value=1, value=5000000, step=50000)
 
     if st.button("Analyze / Predict", type="primary", use_container_width=True):
@@ -582,3 +582,4 @@ elif st.session_state["page"] == "visuals":
 
     st.markdown("<br>", unsafe_allow_html=True)
 # ========================= END =========================
+
