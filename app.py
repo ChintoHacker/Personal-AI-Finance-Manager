@@ -431,24 +431,78 @@ elif st.session_state["page"] == "insights":
 
 
 # ---------------- PAGE: VISUALS ----------------
+# --------------------- VISUALS PAGE (STYLISH + GLASS + MODERN) ---------------------
 elif st.session_state["page"] == "visuals":
-    st.markdown("<h3 style='text-align:center; color:white;'>Financial Overview / Visuals</h3>", unsafe_allow_html=True)
-    chart_data = pd.DataFrame({
-        "Category": ["Income", "Expenses", "Savings", "Investments"],
-        "Amount": [monthly_income, monthly_expenses, current_savings, current_investments]
-    })
-    fig = px.bar(chart_data, x="Category", y="Amount", color="Category",
-                 text=chart_data["Amount"].apply(lambda x: f"Rs {x:,}"),
-                 color_discrete_sequence=["#8b5cf6", "#ef4444", "#10b981", "#f59e0b"])
-    fig.update_traces(textposition='outside', textfont_size=16, textfont_color="white")
-    fig.update_layout(
-        showlegend=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-        height=520, font=dict(color="white", size=15),
-        yaxis=dict(showgrid=False, title="Amount (PKR)", color="white"),
-        xaxis=dict(color="white")
-    )
-    st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("""
+        <h2 style='text-align:center; color:#6CE0AC; margin-bottom:0;'>Financial Visuals</h2>
+        <p style='text-align:center; color:#dbeafe; margin-top:-8px; font-size:17px;'>
+            Your spending & savings — visualized beautifully
+        </p>
+        <br>
+    """, unsafe_allow_html=True)
+
+    # --------- CARD STYLE (used for all 3 blocks) ---------
+    card_style = """
+        background: rgba(255,255,255,0.06);
+        padding: 22px;
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.10);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+        width: 100%;
+        text-align: center;
+        transition: 0.3s;
+    """
+
+    hover_style = """
+        this.style.transform='scale(1.03)';
+        this.style.boxShadow='0 12px 35px rgba(0,0,0,0.55)';
+    """
+
+    unhover_style = """
+        this.style.transform='scale(1)';
+        this.style.boxShadow='0 8px 25px rgba(0,0,0,0.35)';
+    """
+
+    # --------- FIRST ROW (Large visual block) ---------
+    st.markdown(f"""
+        <div style="{card_style}" onmouseover="{hover_style}" onmouseout="{unhover_style}">
+            <h3 style='color:white; margin-top:0;'>Spending Breakdown</h3>
+            <p style='color:#bcd7ff; margin-top:-5px;'>Categorized view of where your money goes</p>
+            <div style='height:260px; display:flex; justify-content:center; align-items:center;'>
+                <span style='color:#ffffff70;'>Your chart will appear here</span>
+            </div>
+        </div>
+        <br><br>
+    """, unsafe_allow_html=True)
+
+    # --------- SECOND ROW (Two visuals side-by-side) ---------
+    v1, v2 = st.columns(2)
+
+    v1.markdown(f"""
+        <div style="{card_style}" onmouseover="{hover_style}" onmouseout="{unhover_style}">
+            <h3 style='color:white; margin-top:0;'>Monthly Trend</h3>
+            <p style='color:#bcd7ff; margin-top:-5px;'>Income vs Expenses Over Time</p>
+            <div style='height:230px; display:flex; justify-content:center; align-items:center;'>
+                <span style='color:#ffffff70;'>Chart Placeholder</span>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    v2.markdown(f"""
+        <div style="{card_style}" onmouseover="{hover_style}" onmouseout="{unhover_style}">
+            <h3 style='color:white; margin-top:0;'>Goal Progress</h3>
+            <p style='color:#bcd7ff; margin-top:-5px;'>Your journey toward savings goals</p>
+            <div style='height:230px; display:flex; justify-content:center; align-items:center;'>
+                <span style='color:#ffffff70;'>Chart Placeholder</span>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
     st.markdown("<br><br>", unsafe_allow_html=True)
 
+
 # ========================= END =========================
+
 
