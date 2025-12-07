@@ -4,7 +4,6 @@ import math
 import plotly.express as px
 import pandas as pd
 
-# ========================= PAGE CONFIG =========================
 st.set_page_config(page_title="Your Financial Advisor — Smart", page_icon="rocket", layout="wide")
 
 # ========================= LOGIN SYSTEM =========================
@@ -20,12 +19,12 @@ if not st.session_state.logged_in:
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
         if st.button("Login", use_container_width=True):
-            if username == "admin" and password == "123":  # Change kar lena apna pasandida
+            if username == "admin" and password == "123":  # Change to your credentials
                 st.session_state.logged_in = True
                 st.success("Login Successful!")
                 st.rerun()
             else:
-                st.error("Wrong username or password")
+                st.error("Invalid Credentials")
     st.stop()
 
 # ========================= THEME TOGGLE =========================
@@ -35,7 +34,7 @@ if "theme" not in st.session_state:
 def switch_theme():
     st.session_state.theme = "light" if st.session_state.theme == "dark" else "dark"
 
-# ========================= CSS (Tera Original Premium Design + Theme Support) =========================
+# ========================= CSS (Original + Improved Recommendation Style) =========================
 dark_css = """
 background: linear-gradient(180deg, #224B7D 0%, #6C9E7F 100%);
 color: white;
@@ -60,18 +59,20 @@ st.markdown(f"""
     .goal-box {{
         background: rgba(255,255,255,0.17); backdrop-filter: blur(14px); border-radius: 25px;
         padding: 32px; box-shadow: 0 14px 40px rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.25);
-        text-align: center; animation: fadeIn 1s ease;
+        text-align: center;
     }}
-    @keyframes fadeIn {{ from {{opacity:0; transform:translateY(20px)}} to {{opacity:1; transform:translateY(0)}} }}
-    .goal-bar {{ height: 38px; background: rgba(255,255,255,0.22); border-radius: 20px; overflow: hidden; margin: 20px 0; }}
-    .goal-fill {{ height: 100%; background: linear-gradient(90deg, #8b5cf6, #ec4899); transition: width 1.5s ease; }}
-    .rec-red    {{ background: linear-gradient(135deg, rgba(239,68,68,0.35), rgba(239,68,68,0.15)); border-left: 6px solid #f87171; }}
-    .rec-orange {{ background: linear-gradient(135deg, rgba(251,146,60,0.35), rgba(251,146,60,0.15)); border-left: 6px solid #fb923c; }}
-    .rec-green  {{ background: linear-gradient(135deg, rgba(34,197,94,0.35), rgba(34,197,94,0.15)); border-left: 6px solid #4ade80; }}
+    .goal-bar {{ height: 38px; background: rgba(255,255,255,0.22); border-radius: 20px; overflow: hidden; margin: 22px 0; }}
+    .goal-fill {{ height: 100%; background: linear-gradient(90deg, #8b5cf6, #ec4899); }}
+    .rec-red    {{ background: linear-gradient(135deg, rgba(239,68,68,0.45), rgba(239,68,68,0.2)); border-left: 6px solid #f87171; color: #fee2e2; }}
+    .rec-orange {{ background: linear-gradient(135deg, rgba(251,146,60,0.45), rgba(251,146,60,0.2)); border-left: 6px solid #fb923c; color: #fff7ed; }}
+    .rec-green  {{ background: linear-gradient(135deg, rgba(34,197,94,0.45), rgba(34,197,94,0.2)); border-left: 6px solid #4ade80; color: #f0fdf4; }}
     .rec-message {{
         font-size: 19px; font-weight: 700; line-height: 1.6; padding: 24px; border-radius: 20px;
-        backdrop-filter: blur(12px); box-shadow: 0 10px 34px rgba(0,0,0,0.55); color: white; margin-top: 20px;
+        backdrop-filter: blur(12px); box-shadow: 0 10px 34px rgba(0,0,0,0.55); margin-top: 20px;
+        transition: transform 0.3s; animation: fadeIn 1s;
     }}
+    .rec-message:hover {{ transform: scale(1.02); }}
+    @keyframes fadeIn {{ from {{opacity:0;}} to {{opacity:1;}} }}
     .stSidebar {{ background: #2D3452 !important; }}
     .stSidebar label {{ color: #F1F5F9 !important; font-weight: 700; font-size: 17px !important; }}
     .input-section {{ background: rgba(255,255,255,0.12); border-radius: 18px; padding: 20px; border: 1px solid rgba(255,255,255,0.22); margin: 10px 0; }}
@@ -110,16 +111,16 @@ monthly_save = max(0, monthly_income - monthly_expenses)
 goal_progress = min(100.0, (current_savings / goal_amount * 100) if goal_amount > 0 else 0)
 months_needed = "N/A" if monthly_save <= 0 else max(0, round((goal_amount - current_savings) / monthly_save))
 
-# ========================= RECOMMENDATION =========================
+# Improved Recommendation
 if goal_progress < 50:
     rec_color = "rec-red"
-    rec_msg = "Goal bohot peeche hai!<br><b>Abhi Rs 10,000/month zyada bachaen</b>"
+    rec_msg = "Goal peeche hai! <br><b>Improve:</b> Savings Rs 10,000/month badhaen <br><b>Avoid:</b> Unnecessary shopping"
 elif goal_progress < 90:
     rec_color = "rec-orange"
-    rec_msg = "Achha progress hai!<br><b>Auto-save on karen aur focus rakhen</b>"
+    rec_msg = "Progress achha hai! <br><b>Improve:</b> Auto-save enable karen <br><b>Avoid:</b> Impulse buys"
 else:
     rec_color = "rec-green"
-    rec_msg = "Mubarak ho! Goal qareeb hai<br><b>Ab naya goal set karen</b>"
+    rec_msg = "Goal qareeb hai! <br><b>Improve:</b> Naya goal plan karen <br><b>Celebrate:</b> Wisely!"
 
 # ========================= HEADER =========================
 st.markdown("<h1 class='app-title'>Your Personal Financial Advisor — Smart</h1>", unsafe_allow_html=True)
@@ -142,7 +143,7 @@ for col, (label, val) in zip(cols, cards):
 
 st.markdown("<br><br>", unsafe_allow_html=True)
 
-# ========================= GOAL + RECOMMENDATION (100% FIXED) =========================
+# ========================= GOAL + RECOMMENDATION =========================
 st.markdown(f"""
 <div class='goal-box'>
     <div style='font-size:24px; font-weight:800; color:white; margin-bottom:16px;'>
@@ -160,19 +161,22 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ========================= CHARTS =========================
-st.markdown("<h3 style='text-align:center; color:white; margin-top:50px;'>Financial Overview Chart</h3>", unsafe_allow_html=True)
+st.markdown("<br><br>", unsafe_allow_html=True)
+
+# ========================= IMPROVED CHART (Clear Text) =========================
+st.markdown("<h3 style='text-align:center; color:white;'>Financial Overview Chart</h3>", unsafe_allow_html=True)
 chart_data = pd.DataFrame({
     "Category": ["Income", "Expenses", "Savings", "Investments"],
     "Amount (PKR)": [monthly_income, monthly_expenses, current_savings, current_investments]
 })
-fig = px.bar(chart_data, x="Category", y="Amount (PKR)", color="Category", text_auto=True,
+fig = px.bar(chart_data, x="Category", y="Amount (PKR)", color="Category", text="Amount (PKR)",
              color_discrete_sequence=["#8b5cf6", "#ef4444", "#10b981", "#f59e0b"])
-fig.update_layout(showlegend=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
+fig.update_traces(textfont_size=16, textangle=0, textposition="outside", cliponaxis=False, textfont_color="white")
+fig.update_layout(showlegend=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', height=400,
+                  font=dict(color="white", size=14))
 st.plotly_chart(fig, use_container_width=True)
 
-st.markdown("<br>", unsafe_allow_html=True)
-st.markdown("<div style='text-align:center; background:rgba(255,255,255,0.12); padding:20px; border-radius:18px; color:#E0E7FF; font-size:17px;'>Inputs change karne ke baad 'Analyze / Predict' zaroor dabana!</div>", unsafe_allow_html=True)
+st.markdown("<div class='tip-box'>Tip: Inputs change karne ke baad 'Analyze / Predict' zaroor dabana!</div>", unsafe_allow_html=True)
 
 st.markdown("---")
 st.caption("© 2025 Your Personal Financial Advisor - Made with love in Pakistan")
