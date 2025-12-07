@@ -5,7 +5,55 @@ import plotly.express as px
 import pandas as pd
 
 # ---------------- Page config ----------------
-st.set_page_config(page_title="Your Financial Advisor — Smart", page_icon="trophy", layout="wide")
+st.set_page_config(page_title="Your Financial Advisor — Smart AI", page_icon="trophy", layout="wide")
+
+# ==================== DARK NEON MODE GLOBAL STYLING ====================
+st.markdown("""
+<style>
+
+body, .stApp {
+    background-color: #0a0f1f;
+    background-image:
+        radial-gradient(circle at top left, #2b0057 0%, transparent 60%),
+        radial-gradient(circle at top right, #002f4f 0%, transparent 70%),
+        radial-gradient(circle at bottom left, #004f4f 0%, transparent 70%);
+    color: #e0e9ff !important;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Neon Text */
+.neon-title {
+    color: #8b5cf6;
+    text-shadow: 0 0 12px #8b5cf6, 0 0 22px #8b5cf6;
+}
+
+/* Neon Glass Cards */
+.neon-card {
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 22px;
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 25px #6C2BD980;
+    transition: 0.3s ease;
+}
+.neon-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 35px #8b5cf6aa;
+}
+
+/* Fade animation */
+.fade {
+    animation: fadeIn 1s ease forwards;
+}
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 
 # ========================= CSS (FINAL PREMIUM + CELEBRATION) =========================
 st.markdown("""
@@ -92,9 +140,9 @@ st.markdown("""
 
 # ========================= SIDEBAR =========================
 with st.sidebar:
-    st.markdown("<h2 style='color:#6CE0AC; text-align:center;'>Apki Financial Inputs</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#6CE0AC; text-align:center;'>Your Financial Inputs</h2>", unsafe_allow_html=True)
     st.markdown("<div class='input-section'>", unsafe_allow_html=True)
-    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0, value=85000, step=1000)
+    monthly_income = st.number_input("Monthly Income (PKR)", min_value=0)
     monthly_expenses = st.number_input("Monthly Expenses (PKR)", min_value=0, value=55000, step=1000)
     current_savings = st.number_input("Current Savings (PKR)", min_value=0, value=150000, step=5000)
     total_debt = st.number_input("Total Debt (PKR)", min_value=0, value=0, step=1000)
@@ -533,26 +581,4 @@ elif st.session_state["page"] == "visuals":
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-
-    # ---------- ROW 3: Spending Heatmap ----------
-    fig_heat = px.imshow(
-        heatmap_data,
-        labels=dict(x="Category", y="Month", color="Rs"),
-        x=categories,
-        y=trend_months,
-        color_continuous_scale="Viridis"
-    )
-    fig_heat.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)",
-        font_color="white"
-    )
-
-    st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
-    st.subheader("🔥 Spending Heatmap (6 Months)")
-    st.plotly_chart(fig_heat, use_container_width=True)
-    st.markdown("</div>", unsafe_allow_html=True)
-
 # ========================= END =========================
-
-
-
