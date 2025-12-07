@@ -584,5 +584,25 @@ elif st.session_state["page"] == "visuals":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
+    # ---------- ROW 3: Spending Heatmap ----------
+    fig_heat = px.imshow(
+        heatmap_data,
+        labels=dict(x="Category", y="Month", color="Rs"),
+        x=categories,
+        y=trend_months,
+        color_continuous_scale="Viridis"
+    )
+    fig_heat.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        font_color="white"
+    )
+
+    st.markdown("<div class='neon-card fade'>", unsafe_allow_html=True)
+    st.subheader("🔥 Spending Heatmap (6 Months)")
+    st.plotly_chart(fig_heat, use_container_width=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
 
 # ========================= END =========================
+
