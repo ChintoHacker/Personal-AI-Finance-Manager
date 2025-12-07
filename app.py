@@ -211,7 +211,86 @@ fig.update_layout(
 )
 st.plotly_chart(fig, use_container_width=True)
 
-st.markdown("<div style='text-align:center; background:rgba(255,255,255,0.12); padding:20px; border-radius:18px; color:#E0E7FF; font-size:17px;'>Tip: Inputs change karen? → 'Analyze / Predict' dabana na bhoolen!</div>", unsafe_allow_html=True)
+# ... (pehla sara code same rahega, sirf yeh part change karna hai)
+
+# ========================= HEADER + GLOWING BUTTONS =========================
+st.markdown("<h1 class='app-title'>Your Personal Financial Advisor — Smart</h1>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align:center; color:#E0E7FF; font-size:19px; margin-top:-10px;'>Today {datetime.now().strftime('%d %B %Y')}</p>", unsafe_allow_html=True)
+
+# YE NAYA SECTION — SUPER GLOWING BUTTONS
+st.markdown("""
+<div style='text-align:center; margin:50px 0;'>
+    <a href='#overview' style='text-decoration:none;'>
+        <button class='glow-btn active'>
+            Overview
+        </button>
+    </a>
+    <a href='#insights' style='text-decoration:none;'>
+        <button class='glow-btn'>
+            AI Insights
+        </button>
+    </a>
+    <a href='#visuals' style='text-decoration:none;'>
+        <button class='glow-btn'>
+            Visuals
+        </button>
+    </a>
+</div>
+
+<style>
+    .glow-btn {
+        background: linear-gradient(45deg, #8b5cf6, #ec4899);
+        color: white;
+        border: none;
+        padding: 16px 36px;
+        margin: 0 15px;
+        border-radius: 50px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.6), 0 0 40px rgba(236, 72, 153, 0.4);
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .glow-btn:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.8), 0 0 60px rgba(236, 72, 153, 0.6);
+    }
+    .glow-btn:active {
+        transform: translateY(-2px);
+    }
+    .glow-btn::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        transform: rotate(45deg);
+        transition: all 0.6s;
+        pointer-events: none;
+    }
+    .glow-btn:hover::before {
+        animation: shine 1.5s infinite;
+    }
+    @keyframes shine {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    .glow-btn.active {
+        background: linear-gradient(45deg, #10b981, #34d399);
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.9);
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# ========================= OVERVIEW SECTION (same as before) =========================
+st.markdown("<h3 id='overview' style='text-align:center; color:white; margin:center; margin:40px 0 30px;'>Overview — Quick Snapshot</h3>", unsafe_allow_html=True)
+
+# ... (baaki sara code bilkul same rahega jo pehle tha)
 
 st.markdown("---")
 st.caption("© 2025 Your Personal Financial Advisor - Made with love in Pakistan")
+
