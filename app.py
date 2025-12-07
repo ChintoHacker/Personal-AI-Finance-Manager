@@ -149,7 +149,7 @@ with st.sidebar:
     current_investments = st.number_input("Current Investments (PKR)", min_value=0, value=50000, step=1000)
     st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("Goal:")
+    st.markdown("<h2 style='color:#6CE0AC; text-align:center;'>Your Goal</h2>", unsafe_allow_html=True)
     goal_name = st.text_input("Goal Name(car 🚙, house 🏡 etc..)")
     goal_amount = st.number_input("Goal Target Amount (PKR)", min_value=1, value=5000000, step=50000)
 
@@ -168,7 +168,7 @@ remaining = max(0, goal_amount - current_savings)
 # ========================= SMART RECOMMENDATION + CELEBRATION =========================
 if goal_progress >= 100:
     rec_color = "rec-celebrate"
-    rec_msg = "GOAL ACHIEVED!<br><b>Mubarak ho bhai!</b><br>Aap ne kar dikhaya! Ab naya bada goal set karen"
+    rec_msg = "GOAL ACHIEVED!<br><b>Congrats!</b><br>Aap ne kar dikhaya! Ab new big goal set karain"
 elif goal_progress < 50:
     rec_color = "rec-red"
     rec_msg = "Goal bohot door hai!<br><b>Action:</b> Har cheez se 15% cut karen<br><b>Extra:</b> Side income start karen"
@@ -197,8 +197,8 @@ if show_plans:
     strong_time = "N/A" if strong_save <= 0 else round(remaining / strong_save)
 
 # ========================= HEADER + NAV (WORKING) =========================
-st.markdown("<h1 class='app-title'>Your Personal Financial Advisor — Smart</h1>", unsafe_allow_html=True)
-st.markdown(f"<p style='text-align:center; color:#E0E7FF; font-size:19px; margin-top:-10px;'>Today {datetime.now().strftime('%d %B %Y')}</p>", unsafe_allow_html=True)
+st.markdown("<h1 class='app-title'>Your Personal Financial Advisor — Smart AI</h1>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align:center; color:#E0E7FF; font-size:22px; margin-top:-10px;'>Today {datetime.now().strftime('%d %B %Y')}</p>", unsafe_allow_html=True)
 
 # initialize page state
 if "page" not in st.session_state:
@@ -305,24 +305,24 @@ if st.session_state["page"] == "overview":
     fig = px.bar(chart_data, x="Category", y="Amount", color="Category",
                  text=chart_data["Amount"].apply(lambda x: f"Rs {x:,}"),
                  color_discrete_sequence=["#8b5cf6", "#ef4444", "#10b981", "#f59e0b"])
-    fig.update_traces(textposition='outside', textfont_size=17, textfont_color="white")
+    fig.update_traces(textposition='outside', textfont_size=20, textfont_color="pink")
     fig.update_layout(
         showlegend=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-        height=500, font=dict(color="white", size=16),
-        yaxis=dict(showgrid=False, title="Amount (PKR)", color="white"),
-        xaxis=dict(color="white")
+        height=500, font=dict(color="pink", size=20),
+        yaxis=dict(showgrid=False, title="Amount (PKR)", color="pink"),
+        xaxis=dict(color="pink")
     )
     st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("---")
-    st.caption("© 2025 Your Personal Financial Advisor - Made with love in Pakistan")
+    st.caption("© 2025 Your Personal Financial Advisor - Made with Abdul-Hanan in Pakistan")
 
 # ---------------- PAGE: INSIGHTS ----------------
 elif st.session_state["page"] == "insights":
 
     # Page Title
-    st.markdown("<h2 style='text-align:center; color:#6CE0AC; margin-bottom:0;'>AI Insights</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; color:#dbeafe; margin-top:-8px; font-size:17px;'>Your smart emergency readiness overview</p>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; color:#6CE0AC; margin-bottom:0;'>Modern Insights</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#dbeafe; margin-top:-8px; font-size:17px;'>Emergency readiness overview</p>", unsafe_allow_html=True)
 
     # Calculations
     required = monthly_expenses * 3
@@ -344,7 +344,7 @@ elif st.session_state["page"] == "insights":
     else:
         gauge_color = "#10b981"
         text_status = "Good"
-        suggestion = "Shabash! Emergency fund nearly/fully complete — keep it isolated for real emergencies."
+        suggestion = "Shabash! Emergency fund nearly / fully complete — keep it isolated for real emergencies."
 
     angle = progress * 3.6
 
@@ -487,7 +487,7 @@ elif st.session_state["page"] == "visuals":
     import numpy as np
 
     st.markdown("<h2 class='neon-title' style='text-align:center;'>Advanced Financial Visuals</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; margin-top:-10px;'>Interactive | Neon Mode | Smooth Animations</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; margin-top:-10px;'>Breakdowns | Trend | Goal </p>", unsafe_allow_html=True)
 
     # ---------- DATA PREP ----------
     categories = ["Food", "Transport", "Bills", "Shopping", "Other"]
@@ -582,4 +582,3 @@ elif st.session_state["page"] == "visuals":
 
     st.markdown("<br>", unsafe_allow_html=True)
 # ========================= END =========================
-
