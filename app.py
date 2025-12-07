@@ -77,6 +77,12 @@ months_needed = "N/A" if monthly_save <= 0 else max(0, round((goal_amount - curr
 
 remaining = max(0, goal_amount - current_savings)
 
+# Emergency Fund Calculations
+recommended_emergency_fund = monthly_expenses * 6  # 6 months of expenses as standard
+emergency_progress = min(100.0, (current_savings / recommended_emergency_fund * 100) if recommended_emergency_fund > 0 else 0)
+emergency_months_needed = "N/A" if monthly_save <= 0 else max(0, round((recommended_emergency_fund - current_savings) / monthly_save))
+emergency_remaining = max(0, recommended_emergency_fund - current_savings)
+
 # ========================= SMART RECOMMENDATION + CELEBRATION =========================
 if goal_progress >= 100:
     rec_color = "rec-celebrate"
@@ -90,6 +96,20 @@ elif goal_progress < 90:
 else:
     rec_color = "rec-green"
     rec_msg = "Goal qareeb hai!<br><b>Final Push:</b> Thodi si zyada saving<br><b>Shabash!</b> Bas thoda aur!"
+
+# Emergency Recommendations
+if emergency_progress >= 100:
+    emergency_rec_color = "rec-celebrate"
+    emergency_rec_msg = "EMERGENCY FUND COMPLETE!<br><b>Mubarak ho!</b><br>Aap tayyar hain emergencies ke liye. Ab investments pe focus karen."
+elif emergency_progress < 50:
+    emergency_rec_color = "rec-red"
+    emergency_rec_msg = "Emergency fund bohot kam hai!<br><b>Urgent Action:</b> Har mahina 20% income save karen<br><b>Tip:</b> Non-essential kharchay cut karen aur side hustle shuru karen."
+elif emergency_progress < 80:
+    emergency_rec_color = "rec-orange"
+    emergency_rec_msg = "Emergency fund theek hai lekin improve karen!<br><b>Action:</b> Mahina mein extra 10-15% add karen<br><b>Tip:</b> High-interest savings account use karen."
+else:
+    emergency_rec_color = "rec-green"
+    emergency_rec_msg = "Emergency fund qareeb complete hai!<br><b>Final Push:</b> Bas thoda aur add karen<br><b>Shabash!</b> Aap safe side pe hain."
 
 # ========================= SMART PLANS (Dynamic & Realistic) =========================
 show_plans = goal_progress < 95  # Sirf jab tak goal complete na ho
@@ -107,8 +127,6 @@ if show_plans:
 
     basic_time = "N/A" if basic_save <= 0 else round(remaining / basic_save)
     strong_time = "N/A" if strong_save <= 0 else round(remaining / strong_save)
-
-# ... (pehla sara code same rahega, sirf yeh part change karna hai)
 
 # ========================= HEADER + GLOWING BUTTONS =========================
 st.markdown("<h1 class='app-title'>Your Personal Financial Advisor — Smart</h1>", unsafe_allow_html=True)
@@ -183,8 +201,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ========================= OVERVIEW SECTION (same as before) =========================
-st.markdown("<h3 id='overview' style='text-align:center; color:white; margin:center; margin:40px 0 30px;'>Overview — Quick Snapshot</h3>", unsafe_allow_html=True)
+# ========================= OVERVIEW SECTION =========================
+st.markdown("<h3 id='overview' style='text-align:center; color:white; margin:40px 0 30px;'>Overview — Quick Snapshot</h3>", unsafe_allow_html=True)
 cols = st.columns(5)
 for col, (label, val) in zip(cols, [
     ("Total Amount", total_amount),
@@ -202,8 +220,32 @@ for col, (label, val) in zip(cols, [
 
 st.markdown("<br><br>", unsafe_allow_html=True)
 
-# ========================= GOAL SECTION =========================
-st.markdown("<h3 style='text-align:center; color:white; margin-bottom:30px;'>Goal Progress & Smart Plans</h3>", unsafe_allow_html=True)
+# ========================= INSIGHTS SECTION =========================
+st.markdown("<h3 id='insights' style='text-align:center; color:white; margin:40px 0 30px;'>AI Insights — Smart Advice</h3>", unsafe_allow_html=True)
+
+# Emergency Funds Section (First in Insights)
+st.markdown("<h4 style='text-align:center; color:white; margin-bottom:30px;'>Emergency Fund Progress</h4>", unsafe_allow_html=True)
+st.markdown(f"""
+<div class='goal-box'>
+    <div style='font-size:24px; font-weight:800; color:white; margin-bottom:16px;'>
+        Emergency Fund → Recommended: Rs {recommended_emergency_fund:,} (6 months expenses)
+    </div>
+    <div class='goal-bar'>
+        <div class='goal-fill' style='width:{emergency_progress}%'></div>
+    </div>
+    <div style='color:#E0E7FF; font-size:18px; font-weight:600; margin:16px 0;'>
+        {emergency_progress:.1f}% Complete • Current ETA: {emergency_months_needed} months
+    </div>
+    <div class='rec-message {emergency_rec_color}'>
+        {emergency_rec_msg}
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("<br><br>", unsafe_allow_html=True)
+
+# Goal Section (After Emergency)
+st.markdown("<h4 style='text-align:center; color:white; margin-bottom:30px;'>Goal Progress & Smart Plans</h4>", unsafe_allow_html=True)
 
 st.markdown(f"""
 <div class='goal-box'>
@@ -224,7 +266,7 @@ st.markdown(f"""
 
 # ========================= SMART PLANS =========================
 if show_plans:
-    st.markdown("<h4 style='text-align:center; color:white; margin-top:40px;'>Personalized Savings Plans</h4>", unsafe_allow_html=True)
+    st.markdown("<h5 style='text-align:center; color:white; margin-top:40px;'>Personalized Savings Plans for Goal</h5>", unsafe_allow_html=True)
     p1, p2 = st.columns(2)
     with p1:
         st.markdown(f"""
@@ -245,8 +287,11 @@ if show_plans:
 
 st.markdown("<br><br>", unsafe_allow_html=True)
 
+# ========================= VISUALS SECTION =========================
+st.markdown("<h3 id='visuals' style='text-align:center; color:white; margin:40px 0 30px;'>Visuals — Charts & Graphs</h3>", unsafe_allow_html=True)
+
 # ========================= FINAL CHART (100% CLEAR LABELS) =========================
-st.markdown("<h3 style='text-align:center; color:white;'>Financial Overview</h3>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align:center; color:white;'>Financial Overview</h4>", unsafe_allow_html=True)
 chart_data = pd.DataFrame({
     "Category": ["Income", "Expenses", "Savings", "Investments"],
     "Amount": [monthly_income, monthly_expenses, current_savings, current_investments]
