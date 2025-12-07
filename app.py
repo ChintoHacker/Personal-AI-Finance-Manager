@@ -271,163 +271,159 @@ if st.session_state["page"] == "overview":
 
 # ---------------- PAGE: INSIGHTS ----------------
 elif st.session_state["page"] == "insights":
-    # Version 2 — Advanced user-friendly Emergency Fund + Quick Insights
-    st.markdown("<h2 style='text-align:center; color:#6CE0AC;'>AI Insights</h2>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align:center; color:white; margin-top:-6px;'>Emergency Fund — 3 Months of Expenses</h4>", unsafe_allow_html=True)
 
-    # CALCULATIONS for emergency
+    # Page Title
+    st.markdown("<h2 style='text-align:center; color:#6CE0AC; margin-bottom:0;'>AI Insights</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#dbeafe; margin-top:-8px; font-size:17px;'>Your smart emergency readiness overview</p>", unsafe_allow_html=True)
+
+    # Calculations
     required = monthly_expenses * 3
     ideal_required = monthly_expenses * 6
-    raw_progress = (current_savings / required) * 100 if required > 0 else 0
+    raw_progress = (current_savings / required * 100) if required > 0 else 0
     progress = min(max(raw_progress, 0), 100)
     months_covered = current_savings / monthly_expenses if monthly_expenses > 0 else 0
     shortfall = max(0, required - current_savings)
 
-    # gauge color and suggestion
-    if raw_progress < 50:
+    # Gauge Logic
+    if progress < 50:
         gauge_color = "#ef4444"
-        suggestion = "Emergency fund BOHOT kam hai — 20% monthly save karna start karo."
-    elif raw_progress < 80:
+        text_status = "Low"
+    elif progress < 80:
         gauge_color = "#f59e0b"
-        suggestion = "Acha progress! Auto-transfer ON kar do."
+        text_status = "Fair"
     else:
         gauge_color = "#10b981"
-        suggestion = "Shabash! Emergency fund almost complete."
+        text_status = "Good"
 
-    angle = progress * 3.6  # degrees
+    angle = progress * 3.6
 
-    # Circular gauge (clean)
-    st.markdown(f"""
-    <div style="display:flex; justify-content:center; margin-top:12px;">
-        <div style="
-            width:200px; height:200px; border-radius:50%;
-            background: conic-gradient({gauge_color} {angle}deg, rgba(255,255,255,0.06) {angle}deg);
-            display:flex; align-items:center; justify-content:center;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.45);
-        ">
+    # ---------- Gauge Card ----------
+    st.markdown("""
+        <div style="display:flex; justify-content:center; margin-top:18px;">
             <div style="
-                width:135px; height:135px; border-radius:50%;
-                background: rgba(0,0,0,0.36);
-                border: 6px solid rgba(255,255,255,0.04);
-                display:flex; flex-direction:column; justify-content:center; align-items:center;
-                color:white; font-weight:800;
+                width:240px; height:240px; border-radius:50%;
+                background: rgba(255,255,255,0.05); padding:18px;
+                box-shadow:0 8px 30px rgba(0,0,0,0.45); 
+                border:1px solid rgba(255,255,255,0.08);
+                backdrop-filter: blur(8px);
             ">
-                <div style='font-size:13px; color:#cfe9ff;'>Emergency Ready</div>
-                <div style='font-size:28px; margin-top:6px;'>{progress:.1f}%</div>
-                <div style='font-size:11px; color:#bfe9ff; margin-top:6px;'>of required</div>
+                <div style="
+                    width:100%; height:100%; border-radius:50%;
+                    background: conic-gradient(""" + gauge_color + f""" {angle}deg, rgba(255,255,255,0.08) {angle}deg);
+                    display:flex; justify-content:center; align-items:center;
+                ">
+                    <div style="
+                        width:155px; height:155px; border-radius:50%;
+                        background: rgba(0,0,0,0.30);
+                        border: 6px solid rgba(255,255,255,0.06);
+                        display:flex; flex-direction:column; justify-content:center; align-items:center;
+                    ">
+                        <div style='color:#bbddff; font-size:13px;'>Emergency Status</div>
+                        <div style='color:white; font-size:33px; font-weight:900;'>{progress:.0f}%</div>
+                        <div style='color:#d0e8ff; font-size:12px; margin-top:6px;'>{text_status}</div>
+                    </div>
+                </div>
             </div>
         </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ---------- Stats Row ----------
+    a, b = st.columns(2)
+    a.markdown(f"""
+    <div style="background:rgba(255,255,255,0.08); padding:16px; border-radius:14px;
+                border:1px solid rgba(255,255,255,0.10); text-align:center;">
+        <div style='color:#b6d8ff; font-size:14px;'>Monthly Expenses</div>
+        <div style='color:white; font-size:22px; font-weight:800;'>Rs {monthly_expenses:,}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    b.markdown(f"""
+    <div style="background:rgba(255,255,255,0.08); padding:16px; border-radius:14px;
+                border:1px solid rgba(255,255,255,0.10); text-align:center;">
+        <div style='color:#b6d8ff; font-size:14px;'>Months Covered</div>
+        <div style='color:white; font-size:22px; font-weight:800;'>{months_covered:.1f} months</div>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Stats boxes
-    s1, s2 = st.columns(2)
-    with s1:
-        st.markdown(f"""
-        <div style='background:rgba(255,255,255,0.06); padding:12px; border-radius:12px; text-align:center; border:1px solid rgba(255,255,255,0.06);'>
-            <div style='color:#cfe9ff; font-size:13px;'>Monthly Expenses</div>
-            <div style='color:white; font-size:18px; font-weight:800;'>Rs {monthly_expenses:,}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with s2:
-        st.markdown(f"""
-        <div style='background:rgba(255,255,255,0.06); padding:12px; border-radius:12px; text-align:center; border:1px solid rgba(255,255,255,0.06);'>
-            <div style='color:#cfe9ff; font-size:13px;'>Months Covered</div>
-            <div style='color:white; font-size:18px; font-weight:800;'>{months_covered:.1f} mo</div>
-        </div>
-        """, unsafe_allow_html=True)
+    # ---------- 3 Info Cards ----------
+    c1, c2, c3 = st.columns(3)
+
+    c1.markdown(f"""
+    <div style="background:rgba(255,255,255,0.07); padding:16px; border-radius:12px; text-align:center;
+                border:1px solid rgba(255,255,255,0.10);">
+        <div style='color:#c7d2fe; font-size:13px;'>Required (3 months)</div>
+        <div style='color:white; font-size:20px; font-weight:800;'>Rs {required:,}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    c2.markdown(f"""
+    <div style="background:rgba(255,255,255,0.07); padding:16px; border-radius:12px; text-align:center;
+                border:1px solid rgba(255,255,255,0.10);">
+        <div style='color:#c7d2fe; font-size:13px;'>Ideal (6 months)</div>
+        <div style='color:white; font-size:20px; font-weight:800;'>Rs {ideal_required:,}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    c3.markdown(f"""
+    <div style="background:rgba(255,255,255,0.07); padding:16px; border-radius:12px; text-align:center;
+                border:1px solid rgba(255,255,255,0.10);">
+        <div style='color:#c7d2fe; font-size:13px;'>Shortfall</div>
+        <div style='color:white; font-size:20px; font-weight:800;'>Rs {shortfall:,}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Three info boxes
-    info_c1, info_c2, info_c3 = st.columns(3)
-    with info_c1:
-        st.markdown(f"""
-        <div style='background:rgba(255,255,255,0.06); padding:14px; border-radius:10px; text-align:center;'>
-            <div style='color:#c7d2fe; font-size:13px;'>Required (3 mo)</div>
-            <div style='color:white; font-size:18px; font-weight:800;'>Rs {required:,}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with info_c2:
-        st.markdown(f"""
-        <div style='background:rgba(255,255,255,0.06); padding:14px; border-radius:10px; text-align:center;'>
-            <div style='color:#c7d2fe; font-size:13px;'>Ideal (6 mo)</div>
-            <div style='color:white; font-size:18px; font-weight:800;'>Rs {ideal_required:,}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with info_c3:
-        st.markdown(f"""
-        <div style='background:rgba(255,255,255,0.06); padding:14px; border-radius:10px; text-align:center;'>
-            <div style='color:#c7d2fe; font-size:13px;'>Shortfall</div>
-            <div style='color:white; font-size:18px; font-weight:800;'>Rs {shortfall:,}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # Suggestion box
+    # ---------- Suggestion ----------
     st.markdown(f"""
-    <div style='background:rgba(255,255,255,0.08); padding:12px; border-radius:10px; text-align:center; font-weight:700;'>
+    <div style='background:rgba(255,255,255,0.10); padding:16px; border-radius:14px; 
+         text-align:center; color:white; font-size:17px; font-weight:700;'>
         {suggestion}
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Quick Insights - 4 cards in a row
-    q1, q2, q3, q4 = st.columns(4, gap="medium")
-    with q1:
-        st.markdown(f"""
-        <div class='quick-box'>
-            <div style='display:flex; align-items:center; gap:8px;'>
-                <div class='quick-icon'>⚠️</div>
-                <div>
-                    <div class='quick-title'>Emergency</div>
-                    <div class='quick-sub'>{'Low — need Rs {:,}'.format(shortfall) if raw_progress<50 else ('Fair — keep saving' if raw_progress<80 else 'Good — nearly done')}</div>
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-    with q2:
-        st.markdown(f"""
-        <div class='quick-box'>
-            <div style='display:flex; align-items:center; gap:8px;'>
-                <div class='quick-icon'>💰</div>
-                <div>
-                    <div class='quick-title'>Saving</div>
-                    <div class='quick-sub'>{'Positive' if monthly_income>monthly_expenses else 'Negative'}</div>
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-    with q3:
-        st.markdown(f"""
-        <div class='quick-box'>
-            <div style='display:flex; align-items:center; gap:8px;'>
-                <div class='quick-icon'>🎯</div>
-                <div>
-                    <div class='quick-title'>Goal</div>
-                    <div class='quick-sub'>{'{}% complete'.format(int(goal_progress))}</div>
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-    with q4:
-        st.markdown(f"""
-        <div class='quick-box'>
-            <div style='display:flex; align-items:center; gap:8px;'>
-                <div class='quick-icon'>📉</div>
-                <div>
-                    <div class='quick-title'>Debt</div>
-                    <div class='quick-sub'>{'No debt' if total_debt<=0 else f'Rs {total_debt:,}'}</div>
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    # ---------- Quick Insights (more compact & user friendly) ----------
+    q1, q2, q3, q4 = st.columns(4)
 
-    st.markdown("<br><br>", unsafe_allow_html=True)
+    q1.markdown(f"""
+        <div class='quick-box'>
+            <span class='quick-icon'>⚠️</span>
+            <span class='quick-title'>Emergency</span>
+            <div class='quick-sub'>{text_status} • {progress:.0f}% ready</div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    q2.markdown(f"""
+        <div class='quick-box'>
+            <span class='quick-icon'>💰</span>
+            <span class='quick-title'>Saving</span>
+            <div class='quick-sub'>{'Positive flow' if monthly_income>monthly_expenses else 'Negative flow'}</div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    q3.markdown(f"""
+        <div class='quick-box'>
+            <span class='quick-icon'>🎯</span>
+            <span class='quick-title'>Goal</span>
+            <div class='quick-sub'>{goal_progress:.0f}% complete</div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    q4.markdown(f"""
+        <div class='quick-box'>
+            <span class='quick-icon'>📉</span>
+            <span class='quick-title'>Debt</span>
+            <div class='quick-sub'>{'No debt' if total_debt==0 else f'Rs {total_debt:,}'}</div>
+        </div>
+    """, unsafe_allow_html=True)
+
+
 
 # ---------------- PAGE: VISUALS ----------------
 elif st.session_state["page"] == "visuals":
@@ -450,3 +446,4 @@ elif st.session_state["page"] == "visuals":
     st.markdown("<br><br>", unsafe_allow_html=True)
 
 # ========================= END =========================
+
