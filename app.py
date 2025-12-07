@@ -123,17 +123,41 @@ p, div, span, label {
     border-left:4px solid #10b981;
 }
 
-/* ---------- SIDEBAR TEXT ONLY (no layout change) ---------- */
-.stSidebar, .css-1d391kg, .sidebar-content {
-    background: rgba(255, 255, 255, 0.07) !important;
-    backdrop-filter: blur(12px);
-    border-right: 1px solid rgba(255, 255, 255, 0.15);
+/* ---------- SIDEBAR LABELS BLACK ---------- */
+.stSidebar label,
+.css-1cpxqw2, .css-1a32fsj, .stNumberInput label,
+.sidebar .sidebar-content label {
+    color: #000000 !important;          /* pure black labels */
+    font-weight: 700 !important;
 }
 
-label, .stNumberInput label {
-    color:black !important;
-    font-weight:600;
+/* ---------- SIDEBAR INPUT BOXES WHITE BG ---------- */
+.stSidebar input[type="number"],
+.stSidebar input[type="text"],
+.stSidebar .stNumberInput input,
+.sidebar .sidebar-content input {
+    background: #FFFFFF !important;     /* white input background */
+    color: #000000 !important;          /* dark text */
+    border: 1px solid #D1D5DB !important;
+    border-radius: 8px !important;
+    padding: 6px 10px !important;
 }
+
+/* ---------- INPUT BOX HOVER / FOCUS ---------- */
+.stSidebar input:focus,
+.sidebar .sidebar-content input:focus {
+    border: 1px solid #3B82F6 !important;   /* blue highlight */
+    box-shadow: 0 0 6px rgba(59, 130, 246, 0.35);
+}
+
+/* ---------- OPTIONAL: WHITE INPUT SECTION BG ---------- */
+.input-section {
+    background: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+}
+
 
 </style>
 """, unsafe_allow_html=True)
@@ -646,6 +670,7 @@ except Exception as e:
     st.download_button("Download summary (txt)", data=summary_text, file_name="summary.txt")
 
 st.markdown("<div class='muted' style='margin-top:8px'>Report includes summary, goal progress, emergency info & short suggestions.</div>", unsafe_allow_html=True)
+
 
 
 
