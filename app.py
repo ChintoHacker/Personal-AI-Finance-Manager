@@ -10,12 +10,13 @@ import os
 
 st.set_page_config(page_title="Apka Financial Advisor — Smart", page_icon="💸", layout="wide")
 
+st.markdown("""
 <style>
 
 /* ---------- GLOBAL APP ---------- */
 .stApp {
     background: linear-gradient(180deg,#224B7D 0%, #6C9E7F 100%);
-    color: #F7FAFC !important;      /* Bright clean white text */
+    color: #F7FAFC !important;
     font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
 }
 
@@ -38,7 +39,6 @@ p, div, span, label {
     color:#F1F5F9 !important;  
 }
 
-/* Muted text – more visible than before */
 .muted {
     color: rgba(255,255,255,0.82) !important;
 }
@@ -59,13 +59,12 @@ p, div, span, label {
     box-shadow:0 8px 28px rgba(0,0,0,0.45);
 }
 
-/* ---------- CARDS / METRICS ---------- */
+/* ---------- CARDS ---------- */
 .stat-card {
     background: rgba(255,255,255,0.08);
     border-radius:12px;
     border:1px solid rgba(255,255,255,0.18);
     padding:14px;
-    color:white;
 }
 
 .stat-label {
@@ -97,13 +96,12 @@ p, div, span, label {
     background: linear-gradient(90deg,#06b6d4,#7c3aed);
 }
 
-/* ---------- TILES (Quick Insights & Suggestions) ---------- */
+/* ---------- TILES ---------- */
 .tile {
     padding:12px;
     border-radius:10px;
     background: rgba(255,255,255,0.12);
     border:1px solid rgba(255,255,255,0.22);
-    color:white;
 }
 
 .tile-title {
@@ -125,7 +123,7 @@ p, div, span, label {
     border-left:4px solid #10b981;
 }
 
-/* ---------- SIDEBAR (No layout changes — just readable text) ---------- */
+/* ---------- SIDEBAR TEXT ONLY (no layout change) ---------- */
 .css-1d391kg, .stSidebar, .sidebar .sidebar-content {
     color:white !important;
 }
@@ -136,6 +134,7 @@ label, .stNumberInput label {
 }
 
 </style>
+""", unsafe_allow_html=True)
 
 
 # ------------------------------
@@ -645,5 +644,6 @@ except Exception as e:
     st.download_button("Download summary (txt)", data=summary_text, file_name="summary.txt")
 
 st.markdown("<div class='muted' style='margin-top:8px'>Report includes summary, goal progress, emergency info & short suggestions.</div>", unsafe_allow_html=True)
+
 
 
