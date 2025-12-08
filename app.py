@@ -17,7 +17,7 @@ body, .stApp {
         radial-gradient(circle at top left, #2b0057 0%, transparent 60%),
         radial-gradient(circle at top right, #002f4f 0%, transparent 70%),
         radial-gradient(circle at bottom left, #004f4f 0%, transparent 70%);
-    color: #eef3ff !important;
+    color: #008200 !important;
     font-family: 'Poppins', sans-serif;
 }
 
@@ -597,5 +597,6 @@ elif st.session_state["page"] == "visuals":
 
     st.markdown("<br>", unsafe_allow_html=True)
 # ========================= END =========================
+
 
 
