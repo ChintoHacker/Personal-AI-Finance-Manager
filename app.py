@@ -12,7 +12,7 @@ st.markdown("""
 <style>
 
 body, .stApp {
-    background: linear-gradient(180deg, #182238 0%, #0d1524 100%) !important;
+    background-color: #0a0f1f;
     background-image:
         radial-gradient(circle at top left, #2b0057 0%, transparent 60%),
         radial-gradient(circle at top right, #002f4f 0%, transparent 70%),
@@ -597,4 +597,5 @@ elif st.session_state["page"] == "visuals":
 
     st.markdown("<br>", unsafe_allow_html=True)
 # ========================= END =========================
+
 
