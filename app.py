@@ -12,7 +12,6 @@ warnings.filterwarnings("ignore")
 
 # ---------------- Page config ----------------
 st.set_page_config(page_title="Your Financial Advisor — Smart AI", page_icon="🏆", layout="wide")
-st.set_option('deprecation.showPyplotGlobalUse', False)
 
 # ---------------- Helpers ----------------
 def fmt_rs(x):
@@ -21,49 +20,61 @@ def fmt_rs(x):
     except Exception:
         return str(x)
 
-# ==================== GLOBAL STYLING + ANIMATIONS ====================
+# ==================== GLOBAL STYLING + ANIMATIONS (ENHANCED) ====================
 st.markdown(
     """
 <style>
 /* Base app */
+:root{
+  --glass-bg: rgba(255,255,255,0.03);
+  --muted: #98a0b3;
+  --accent1: #8b5cf6;
+  --accent2: #ec4899;
+  --success: #10b981;
+  --danger: #ef4444;
+}
 body, .stApp {
-    background-color: #0b1220;
+    background: linear-gradient(180deg,#071021 0%, #071a2a 50%, #062531 100%);
     color: #e6eef8 !important;
     font-family: 'Inter', 'Poppins', sans-serif;
 }
 
-/* App title */
-.app-title {
-    font-size: 44px !important;
-    font-weight: 900 !important;
-    color: #7ef0c6 !important;
-    text-align: center;
-    margin-bottom: 4px;
-    letter-spacing: 0.2px;
-    text-shadow: 0 2px 18px rgba(0,0,0,0.6);
+/* Animated header */
+.header-anim {
+  font-size: 44px !important;
+  font-weight: 900 !important;
+  text-align: center;
+  color: #7ef0c6 !important;
+  letter-spacing: 0.2px;
+  text-shadow: 0 6px 26px rgba(0,0,0,0.7), 0 0 18px rgba(142, 99, 255, 0.12);
+  background: linear-gradient(90deg, rgba(142,99,255,0.15), rgba(236,72,153,0.08));
+  display:inline-block;
+  padding:14px 28px;
+  border-radius:16px;
+  animation: float 4s ease-in-out infinite;
 }
-
-/* Neon small title */
-.neon-title {
-    color: #b692ff;
-    text-shadow: 0 0 12px #b692ff, 0 0 22px #b692ff;
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
 }
 
 /* Card glass */
 .neon-card {
-    background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
     border-radius: 16px;
     padding: 18px;
-    border: 1px solid rgba(255,255,255,0.06);
-    box-shadow: 0 8px 30px rgba(11,18,32,0.7);
-    transition: transform .28s ease, box-shadow .28s ease;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+    transition: transform .28s ease, box-shadow .28s ease, border .2s ease;
 }
 .neon-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 18px 60px rgba(139,92,246,0.10);
+    box-shadow: 0 22px 60px rgba(139,92,246,0.08);
+    border: 1px solid rgba(139,92,246,0.12);
 }
 
-/* subtle fade-in for content */
+/* subtle fade-in */
 .fade {
     animation: fadeIn 0.6s ease both;
 }
@@ -74,54 +85,49 @@ body, .stApp {
 
 /* Overview cards */
 .overview-card {
-    background: rgba(255,255,255,0.04);
-    border-radius: 14px;
-    padding: 18px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    padding: 14px;
     text-align: center;
-    transition: transform .22s ease;
 }
-.overview-card:hover { transform: translateY(-6px); }
+.card-label { font-size:13px; color:var(--muted); font-weight:700; }
+.card-value { font-size:20px; color:#fff; font-weight:900; margin-top:6px; }
 
-/* goal box */
+/* goal and recommendation */
 .goal-box {
-    border-radius: 18px;
-    padding: 18px;
-    border: 1px solid rgba(255,255,255,0.06);
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-}
-
-/* rec message */
-.rec-message {
     border-radius: 14px;
-    padding: 18px;
-    font-weight: 700;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,0.04);
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+}
+.rec-message {
+    border-radius: 12px;
+    padding: 14px;
+    font-weight: 800;
+    color: white;
+    margin-top:12px;
+    box-shadow: 0 8px 36px rgba(0,0,0,0.45);
 }
 
-/* buttons */
+/* Rounded buttons */
 .stButton>button {
-    background: linear-gradient(45deg, #8b5cf6, #ec4899) !important;
+    background: linear-gradient(45deg, var(--accent1), var(--accent2)) !important;
     color: white !important;
     border-radius: 999px !important;
     padding: 10px 26px !important;
     font-weight: 800 !important;
-    box-shadow: 0 10px 30px rgba(139,92,246,0.18);
-    transition: transform .18s ease;
+    box-shadow: 0 10px 30px rgba(139,92,246,0.16);
+    transition: transform .18s ease, box-shadow .18s ease;
 }
-.stButton>button:hover { transform: translateY(-3px) scale(1.02); }
+.stButton>button:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 18px 50px rgba(139,92,246,0.22); }
 
-/* sidebar tweaks */
-.stSidebar { background: linear-gradient(180deg,#1b2336,#101520) !important; padding: 16px !important; }
+/* Sidebar improvements */
+.stSidebar { background: linear-gradient(180deg,#071226,#081625) !important; padding: 16px !important; border-radius: 12px; }
 .stSidebar .stNumberInput>div>div>input { color: #ffffff !important; }
 
-/* small labels */
-.card-label { font-size:13px; color:#d6e7ff; font-weight:700; }
-.card-value { font-size:20px; color:#fff; font-weight:900; }
-
-/* responsive tweaks */
+/* responsive */
 @media (max-width:900px) {
-    .app-title { font-size:28px !important; }
-    .card-value { font-size:18px; }
+  .header-anim { font-size:28px !important; padding:10px 16px; }
 }
 </style>
 """,
@@ -150,7 +156,8 @@ with st.sidebar:
 total_amount = monthly_income + current_savings
 net_worth = current_savings + current_investments - total_debt
 monthly_save = max(0, monthly_income - monthly_expenses)
-# make goal_progress robust and clipped to [0, 100]
+
+# compute robust progress and months
 goal_progress = 0.0
 if goal_amount > 0:
     goal_progress = float(min(100.0, max(0.0, (current_savings / goal_amount * 100))))
@@ -159,17 +166,17 @@ remaining = max(0, goal_amount - current_savings)
 
 # ========================= SMART RECOMMENDATION + CELEBRATION =========================
 if goal_progress >= 100:
-    rec_color = "linear-gradient(135deg, #8b5cf6, #ec4899)"
-    rec_msg = "GOAL ACHIEVED! — Congrats! Aap ne kar dikhaya! Ab new big goal set karain 🎉"
+    rec_style_bg = "linear-gradient(135deg, #8b5cf6, #ec4899)"
+    rec_msg = "🎉 GOAL ACHIEVED! Congrats! Aap ne kar dikhaya! Ab new big goal set karain."
 elif goal_progress < 50:
-    rec_color = "linear-gradient(135deg, rgba(239,68,68,0.6), rgba(239,68,68,0.2))"
-    rec_msg = "Goal bohot door hai! Action: Har cheez se 15% cut karen. Extra: Side income start karen."
+    rec_style_bg = "linear-gradient(135deg, rgba(239,68,68,0.85), rgba(239,68,68,0.35))"
+    rec_msg = "⚠️ Goal bohot door hai! Action: Har cheez se 15% cut karen. Extra: Side income start karen."
 elif goal_progress < 90:
-    rec_color = "linear-gradient(135deg, rgba(251,146,60,0.6), rgba(251,146,60,0.25))"
-    rec_msg = "Bahut achha ja rahe hain! Next Level: Auto-invest on karen. Tip: Budget app use karen."
+    rec_style_bg = "linear-gradient(135deg, rgba(251,146,60,0.9), rgba(251,146,60,0.3))"
+    rec_msg = "🔧 Bahut achha ja rahe hain! Next Level: Auto-invest on karen. Tip: Budget app use karen."
 else:
-    rec_color = "linear-gradient(135deg, rgba(34,197,94,0.7), rgba(34,197,94,0.3))"
-    rec_msg = "Goal qareeb hai! Final Push: Thodi si zyada saving — Shabash! Bas thoda aur!"
+    rec_style_bg = "linear-gradient(135deg, rgba(34,197,94,0.85), rgba(34,197,94,0.35))"
+    rec_msg = "🚀 Goal qareeb hai! Final Push: Thodi si zyada saving — Shabash! Bas thoda aur!"
 
 # ========================= SMART PLANS (Dynamic & Realistic) =========================
 show_plans = goal_progress < 95
@@ -188,13 +195,13 @@ if show_plans:
     strong_time = "N/A" if strong_save <= 0 else max(0, round(remaining / strong_save))
 
 # ========================= HEADER + NAV =========================
-st.markdown("<h1 class='app-title'>Your Personal Financial Advisor — Smart AI</h1>", unsafe_allow_html=True)
-st.markdown(f"<p style='text-align:center; color:#d8ecff; margin-top:-8px;'>Today {datetime.now().strftime('%d %B %Y')}</p>", unsafe_allow_html=True)
+st.markdown(f"<div style='display:flex; justify-content:center; margin-top:8px;'><div class='header-anim'>Your Personal Financial Advisor — Smart AI</div></div>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align:center; color:#d8ecff; margin-top:6px;'>Today {datetime.now().strftime('%d %B %Y')}</p>", unsafe_allow_html=True)
 
 if "page" not in st.session_state:
     st.session_state["page"] = "overview"
 
-# Navigation buttons (keep same layout and behavior)
+# Navigation buttons (same layout)
 nav1, nav2, nav3 = st.columns([1,1,1])
 with nav1:
     if st.button("Overview"):
@@ -206,7 +213,7 @@ with nav3:
     if st.button("Visuals"):
         st.session_state["page"] = "visuals"
 
-# small nav indicator (keeps visual parity but doesn't move sections)
+# small nav indicator (visual only)
 active = st.session_state["page"]
 st.markdown(
     f"""
@@ -230,7 +237,7 @@ st.markdown(
 
 # ---------------- PAGE: OVERVIEW ----------------
 if st.session_state["page"] == "overview":
-    st.markdown("<h3 style='text-align:center; color:#ffffff; margin:30px 0 10px;'>Overview — Quick Snapshot</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align:center; color:#ffffff; margin:26px 0 10px;'>Overview — Quick Snapshot</h3>", unsafe_allow_html=True)
     cols = st.columns(5)
     items = [
         ("Total Amount", total_amount),
@@ -242,7 +249,7 @@ if st.session_state["page"] == "overview":
     for col, (label, val) in zip(cols, items):
         col.markdown(
             f"""
-            <div class='overview-card fade'>
+            <div class='overview-card neon-card fade'>
                 <div class='card-label'>{label}</div>
                 <div class='card-value'>{fmt_rs(val)}</div>
             </div>
@@ -254,17 +261,16 @@ if st.session_state["page"] == "overview":
 
     # Goal Section
     st.markdown("<h3 style='text-align:center; color:white; margin-bottom:12px;'>Goal Progress & Smart Plans</h3>", unsafe_allow_html=True)
-    # goal bar width safe clamp
     safe_progress = max(0, min(100, goal_progress))
     st.markdown(
         f"""
         <div class='neon-card goal-box fade'>
             <div style='font-size:20px; font-weight:800; color:white; margin-bottom:10px;'>{goal_name} → Target: {fmt_rs(goal_amount)}</div>
-            <div style='height:20px; width:100%; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;'>
-                <div style='height:100%; width:{safe_progress}%; background: linear-gradient(90deg, #8b5cf6, #ec4899); transition: width 0.6s ease;'></div>
+            <div style='height:18px; width:100%; background:rgba(255,255,255,0.03); border-radius:10px; overflow:hidden;'>
+                <div style='height:100%; width:{safe_progress}%; background: linear-gradient(90deg, #8b5cf6, #ec4899); transition: width 0.7s cubic-bezier(.2,.9,.3,1);'></div>
             </div>
             <div style='color:#d9efff; font-size:15px; font-weight:700; margin-top:10px;'>{safe_progress:.1f}% Complete • Current ETA: {months_needed} months</div>
-            <div style='margin-top:14px; background:{rec_color};' class='rec-message'>{rec_msg}</div>
+            <div style='margin-top:14px; background:{rec_style_bg};' class='rec-message'>{rec_msg}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -317,7 +323,7 @@ if st.session_state["page"] == "overview":
         showlegend=False,
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
-        height=480,
+        height=520,
         margin=dict(t=20, b=40, l=40, r=20),
         transition={'duration': 600, 'easing': 'cubic-in-out'},
         font=dict(color="#e8f3ff", size=13)
@@ -452,7 +458,7 @@ elif st.session_state["page"] == "visuals":
     ]
     df = pd.DataFrame({"Category": categories, "Amount": spending})
 
-    # Monthly trend (randomized demo values)
+    # Monthly trend (demo/randomized)
     trend_months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
     df_trend = pd.DataFrame({
         "Month": trend_months,
