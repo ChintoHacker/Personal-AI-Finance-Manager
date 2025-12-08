@@ -7,136 +7,195 @@ import pandas as pd
 # ---------------- Page config ----------------
 st.set_page_config(page_title="Your Financial Advisor — Smart AI", page_icon="trophy", layout="wide")
 
-# ==================== DARK NEON MODE GLOBAL STYLING ====================
+# ==================== DARK NEON MODE GLOBAL STYLING (UPGRADED) ====================
 st.markdown("""
 <style>
 
-body, .stApp {
-    background-color: #0a0f1f;
-    background-image:
-        radial-gradient(circle at top left, #2b0057 0%, transparent 60%),
-        radial-gradient(circle at top right, #002f4f 0%, transparent 70%),
-        radial-gradient(circle at bottom left, #004f4f 0%, transparent 70%);
-    color: #e0e9ff !important;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap');
+
+html, body, .stApp {
     font-family: 'Poppins', sans-serif;
 }
 
-/* Neon Text */
-.neon-title {
-    color: #8b5cf6;
-    text-shadow: 0 0 12px #8b5cf6, 0 0 22px #8b5cf6;
+/* 🔥 New Animated Gradient Background For Whole App */
+.stApp {
+    background: linear-gradient(120deg, #12002f, #081a42, #003b62, #002b52);
+    background-size: 300% 300%;
+    animation: gradientMove 12s ease infinite;
 }
 
-/* Neon Glass Cards */
-.neon-card {
-    background: rgba(255,255,255,0.055);
-    border: 1px solid rgba(255,255,255,0.12);
-    padding: 22px;
-    border-radius: 18px;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 0 25px #6C2BD980;
-    transition: 0.3s ease;
-}
-.neon-card:hover {
-    transform: scale(1.03);
-    box-shadow: 0 0 35px #8b5cf6aa;
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
 }
 
-/* Fade animation */
+/* 🌟 Smooth fade animation */
 .fade {
     animation: fadeIn 1s ease forwards;
 }
 @keyframes fadeIn {
-    from {opacity: 0; transform: translateY(20px);}
+    from {opacity: 0; transform: translateY(18px);}
     to {opacity: 1; transform: translateY(0);}
+}
+
+/* 💫 Floating card animation */
+@keyframes floatCard {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+    100% { transform: translateY(0px); }
+}
+
+/* 🔮 Neon Title Glow */
+.neon-title, .app-title {
+    color: #91f5d1 !important;
+    text-shadow: 0 0 10px #91f5d1, 0 0 30px #78f1c3;
+    animation: floatCard 4s ease infinite;
+}
+
+/* 🔥 Neon glass cards */
+.neon-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 22px;
+    border-radius: 20px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 5px 25px rgba(0,0,0,0.4), 0 0 40px rgba(124,58,237,0.25);
+    transition: 0.3s ease;
+}
+
+.neon-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 40px rgba(124,58,237,0.45);
+}
+
+/* Overview Cards */
+.overview-card {
+    background: rgba(255,255,255,0.12);
+    padding: 26px 16px;
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.25);
+    box-shadow: 0 10px 38px rgba(0,0,0,0.45);
+    transition: 0.35s;
+    animation: floatCard 5s ease-in-out infinite;
+}
+
+.overview-card:hover {
+    transform: translateY(-10px);
+}
+
+/* Labels inside cards */
+.card-label {
+    font-size: 16px;
+    color: #D7E9FF;
+    font-weight: 600;
+}
+.card-value {
+    font-size: 32px;
+    font-weight: 900;
+    color: white;
+}
+
+/* 🔥 Goal Box with animated border glow */
+.goal-box {
+    background: rgba(255,255,255,0.15);
+    border-radius: 25px;
+    padding: 34px;
+    position: relative;
+    border: 1.8px solid rgba(255,255,255,0.22);
+    animation: floatCard 6s ease-in-out infinite;
+    box-shadow: 0 12px 45px rgba(0,0,0,0.50);
+}
+
+/* Animated border glow */
+.goal-box:before {
+    content: "";
+    position: absolute;
+    top: -3px; left: -3px; right: -3px; bottom: -3px;
+    border-radius: 30px;
+    background: linear-gradient(140deg, #8b5cf6, #ec4899, #6ce0ac, #3cb9ff);
+    background-size: 400% 400%;
+    animation: rotateGradient 12s linear infinite;
+    z-index: -1;
+}
+@keyframes rotateGradient {
+    0% {background-position: 0 0;}
+    50% {background-position: 100% 100%;}
+    100% {background-position: 0 0;}
+}
+
+/* Goal Bar */
+.goal-bar {
+    height: 36px;
+    background: rgba(255,255,255,0.22);
+    border-radius: 20px;
+    overflow: hidden;
+}
+.goal-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #8b5cf6, #ec4899);
+    transition: width 0.7s ease;
+}
+
+/* Recommendation Boxes */
+.rec-red, .rec-orange, .rec-green, .rec-celebrate {
+    border-radius: 20px;
+    padding: 26px;
+    font-size: 20px !important;
+    font-weight: 700;
+    line-height: 1.6;
+    text-align: center;
+    box-shadow: 0 10px 32px rgba(0,0,0,0.55);
+}
+
+.rec-red      { background: rgba(239,68,68,0.25); border-left: 8px solid #ef4444; }
+.rec-orange   { background: rgba(251,146,60,0.25); border-left: 8px solid #fb923c; }
+.rec-green    { background: rgba(34,197,94,0.25); border-left: 8px solid #10b981; }
+
+.rec-celebrate {
+    background: linear-gradient(135deg, #f0e, #8b5cf6, #ec4899);
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+}
+
+/* Premium Buttons */
+.stButton>button {
+    background: linear-gradient(45deg, #8b5cf6, #ec4899);
+    color: white;
+    padding: 12px 32px;
+    border-radius: 50px;
+    border: none;
+    box-shadow: 0 8px 25px rgba(139,92,246,0.35);
+    font-size: 16px;
+    font-weight: 700;
+    transition: 0.3s ease;
+}
+.stButton>button:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 12px 40px rgba(139,92,246,0.55);
+}
+
+/* Sidebar */
+.stSidebar {
+    background: rgba(0,0,0,0.3) !important;
+    backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 4px 0 30px rgba(0,0,0,0.45);
+}
+
+.input-section {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.22);
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-
-# ========================= CSS (FINAL PREMIUM + CELEBRATION) =========================
-st.markdown("""
-<style>
-    .stApp { background: linear-gradient(180deg, #224B7D 0%, #6C9E7F 100%); font-family: 'Inter', sans-serif; }
-    .app-title { font-size: 42px !important; font-weight: 900 !important; color: #6CE0AC !important; text-align: center; }
-    .overview-card {
-        background: rgba(255,255,255,0.16); backdrop-filter: blur(14px); border-radius: 22px;
-        padding: 26px 16px; text-align: center; border: 1.5px solid rgba(255,255,255,0.25);
-        box-shadow: 0 10px 32px rgba(0,0,0,0.45); height: 155px; transition: 0.3s;
-    }
-    .overview-card:hover { transform: translateY(-10px); }
-    .card-label { font-size: 16px; color: #E0E7FF; font-weight: 600; }
-    .card-value { font-size: 30px; font-weight: 900; color: white; }
-    .goal-box {
-        background: rgba(255,255,255,0.17); backdrop-filter: blur(14px); border-radius: 25px;
-        padding: 32px; box-shadow: 0 14px 40px rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.25);
-        text-align: center;
-    }
-    .goal-bar { height: 38px; background: rgba(255,255,255,0.22); border-radius: 20px; overflow: hidden; margin: 22px 0; }
-    .goal-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #ec4899); }
-    
-    /* RECOMMENDATION & CELEBRATION */
-    .rec-red    { background: linear-gradient(135deg, rgba(239,68,68,0.5), rgba(239,68,68,0.2)); border-left: 8px solid #f87171; color: #fee2e2; }
-    .rec-orange { background: linear-gradient(135deg, rgba(251,146,60,0.5), rgba(251,146,60,0.2)); border-left: 8px solid #fb923c; color: #fff7ed; }
-    .rec-green  { background: linear-gradient(135deg, rgba(34,197,94,0.6), rgba(34,197,94,0.3)); border-left: 8px solid #4ade80; color: white; }
-    .rec-celebrate { background: linear-gradient(135deg, #f0e, #8b5cf6, #ec4899); color: white; animation: celebrate 2s infinite; }
-    @keyframes celebrate { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-    
-    .rec-message {
-        font-size: 21px; font-weight: 700; line-height: 1.6; padding: 30px; border-radius: 24px;
-        backdrop-filter: blur(14px); box-shadow: 0 12px 40px rgba(0,0,0,0.6); margin-top: 20px;
-        text-align: center;
-    }
-    .plan-card {
-        background: rgba(255,255,255,0.15); border-radius: 20px; padding: 24px; text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.3s; height: 150px;
-    }
-    .plan-card:hover { transform: translateY(-8px); }
-    .stSidebar { background: #2D3452 !important; }
-    .stSidebar label { color: #F1F5F9 !important; font-weight: 700; font-size: 17px !important; }
-    .input-section { background: rgba(255,255,255,0.12); border-radius: 18px; padding: 20px; border: 1px solid rgba(255,255,255,0.22); margin: 10px 0; }
-
-    /* Quick insights small card style used in Insights page */
-    .quick-box {
-        background: rgba(255,255,255,0.15);
-        border-radius: 12px;
-        padding: 14px;
-        text-align: left;
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255,255,255,0.08);
-        box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-    }
-    .quick-icon { font-size: 22px; margin-right:10px; vertical-align:middle; }
-    .quick-title { font-weight:800; color:#E0E7FF; font-size:15px; }
-    .quick-sub { font-size:13px; color:#dbeafe; margin-top:6px; }
-
-    /* Style Streamlit buttons to resemble your glow buttons */
-    .stButton>button {
-        background: linear-gradient(45deg, #8b5cf6, #ec4899);
-        color: white;
-        border: none;
-        padding: 12px 30px;
-        margin: 0 8px;
-        border-radius: 50px;
-        font-size: 16px;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 6px 20px rgba(139,92,246,0.45);
-    }
-    .stButton>button:active { transform: translateY(-2px); }
-    .stButton>button:hover { transform: translateY(-4px) scale(1.02); }
-    .stButton>button.active {
-        background: linear-gradient(45deg,#10b981,#34d399) !important;
-        box-shadow: 0 0 30px rgba(16,185,129,0.9) !important;
-    }
-
-    /* small responsive tweaks */
-    @media (max-width:800px) {
-        .overview-card { height: auto; padding: 18px; }
-    }
-</style>
-""", unsafe_allow_html=True)
 
 # ========================= SIDEBAR =========================
 with st.sidebar:
@@ -582,3 +641,4 @@ elif st.session_state["page"] == "visuals":
 
     st.markdown("<br>", unsafe_allow_html=True)
 # ========================= END =========================
+
