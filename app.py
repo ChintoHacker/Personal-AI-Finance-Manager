@@ -3,9 +3,25 @@ from datetime import datetime
 import math
 import plotly.express as px
 import pandas as pd
+import json
+import requests
+
+def load_lottie(url):
+    return requests.get(url).json()
+
 
 # ---------------- Page config ----------------
 st.set_page_config(page_title="Your Financial Advisor — Smart AI", page_icon="trophy", layout="wide")
+
+lottie_header = load_lottie("https://lottie.host/2a85f74b-0408-4e3e-b15e-3f8ef0d52d30/4W7hdwS7XQ.json")
+st_lottie = st.components.v1.html(
+    f"""
+    <lottie-player src='{json.dumps(lottie_header)}' background='transparent'
+    speed='1' style='width:190px;height:190px;margin:auto;' loop autoplay></lottie-player>
+    """,
+    height=200,
+)
+
 
 # ==================== DARK NEON MODE GLOBAL STYLING (UPGRADED) ====================
 st.markdown("""
@@ -196,6 +212,27 @@ html, body, .stApp {
 </style>
 """, unsafe_allow_html=True)
 
+<style>
+/* Smooth fade between pages */
+.main, .block-container {
+    animation: fadePage 0.7s ease;
+}
+@keyframes fadePage {
+    0%  { opacity: 0; transform: translateY(12px); }
+    100%{ opacity: 1; transform: translateY(0px); }
+}
+
+/* Slide-in effect for main sections */
+.section-animate {
+    animation: slideIn 0.9s ease;
+}
+@keyframes slideIn {
+    0% {opacity:0; transform: translateX(-25px);}
+    100%{opacity:1; transform: translateX(0);}
+}
+</style>
+
+
 
 # ========================= SIDEBAR =========================
 with st.sidebar:
@@ -226,6 +263,17 @@ remaining = max(0, goal_amount - current_savings)
 
 # ========================= SMART RECOMMENDATION + CELEBRATION =========================
 if goal_progress >= 100:
+
+    celebrate = load_lottie("https://lottie.host/98453d44-55d9-42fd-bc9a-d1a184746e96/Qve3pv7WVB.json")
+st.components.v1.html(
+    f"""
+    <lottie-player src='{json.dumps(celebrate)}' background='transparent'
+    speed='1' style='width:260px;height:260px;margin:auto;' autoplay></lottie-player>
+    """,
+    height=260,
+)
+
+    
     rec_color = "rec-celebrate"
     rec_msg = "GOAL ACHIEVED!<br><b>Congrats!</b><br>Aap ne kar dikhaya! Ab new big goal set karain"
 elif goal_progress < 50:
@@ -641,4 +689,5 @@ elif st.session_state["page"] == "visuals":
 
     st.markdown("<br>", unsafe_allow_html=True)
 # ========================= END =========================
+
 
